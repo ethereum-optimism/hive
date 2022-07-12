@@ -23,14 +23,14 @@ jobs:
   # This job runs the optimism test simulations. This requires a virtual
   # machine instead of the container-based build environment because hive needs
   # to be able to talk to the docker containers it creates.
-  op-tests:
+  hive-tests:
     machine:
       image: ubuntu-2004:202201-02
     steps:
       - checkout
       - attach_workspace: {at: "/tmp/build"}
       - run:
-          command: "/tmp/build/hive -sim=optimism -client=op-l1,op-l2,op-proposer,op-batcher,op-node |& tee /tmp/build/hive.log"
+          command: "/tmp/build/hive -sim=optimism -client=op-l1,op-l2,op-proposer,op-batcher,op-node,op-sequencer,op-verifier |& tee /tmp/build/hive.log"
       - run:
           command: "! grep 'pass.*=false' /tmp/build/hive.log"
       - slack/notify:
@@ -64,6 +64,6 @@ workflows:
     jobs:
       - go-test
       - build
-      - op-tests:
+      - hive-tests:
           requires: ["build"]
           context: slack
