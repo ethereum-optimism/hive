@@ -30,7 +30,7 @@ jobs:
       - checkout
       - attach_workspace: {at: "/tmp/build"}
       - run:
-          command: "/tmp/build/hive -sim=optimism -client=op-l1,op-l2,op-proposer,op-batcher,op-node,op-sequencer,op-verifier |& tee /tmp/build/hive.log"
+          command: "/tmp/build/hive -sim=optimism -client=op-l1,op-l2,op-proposer,op-batcher,op-node |& tee /tmp/build/hive.log"
       - run:
           command: "! grep 'pass.*=false' /tmp/build/hive.log"
       - slack/notify:
