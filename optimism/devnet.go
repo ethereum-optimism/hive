@@ -237,7 +237,7 @@ func (d *Devnet) StartVerifier() error {
 		"HIVE_SEQUENCER_ENABLED_FLAG": "",
 		"HIVE_SEQUENCER_KEY_FLAG":     "",
 		// TODO: avoid hardcoding p2p key
-		"HIVE_P2P_STATIC_FLAG": fmt.Sprintf("--p2p.static=/%s/tcp/9003/p2p/16Uiu2HAmHqrXGts25TtKMBRHtvhWZLNypsobKoggpZye1XQtJpbZ", d.Rollup.IP),
+		"HIVE_P2P_STATIC_FLAG": fmt.Sprintf("--p2p.static=/ip4/%s/tcp/9003/p2p/16Uiu2HAmHqrXGts25TtKMBRHtvhWZLNypsobKoggpZye1XQtJpbZ", d.Rollup.IP),
 	}
 
 	optimismPortalOpt := hivesim.WithDynamicFile("/OptimismPortalProxy.json", bytesSource([]byte(d.OptimismPortal)))
