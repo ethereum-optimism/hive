@@ -15,6 +15,7 @@ type Devnet struct {
 	L1       *Eth1Node
 	L2       *L2Node
 	Rollup   *OpNode
+	Verifier *OpNode
 	Proposer *L2OSNode
 	Batcher  *BSSNode
 
@@ -214,6 +215,29 @@ func (d *Devnet) StartOp() error {
 	optimismPortalOpt := hivesim.WithDynamicFile("/OptimismPortalProxy.json", bytesSource([]byte(d.OptimismPortal)))
 	opts := []hivesim.StartOption{executionOpts, optimismPortalOpt}
 	d.Rollup = &OpNode{d.T.StartClient(op.Name, opts...), 7545}
+	return nil
+}
+
+func (d *Devnet) StartVerifier() error {
+	op := d.Nodes["op-node"]
+
+	executionOpts := hivesim.Params{
+		"HIVE_CHECK_LIVE_PORT":  "7545",
+		"HIVE_CATALYST_ENABLED": "1",
+		"HIVE_LOGLEVEL":         os.Getenv("HIVE_LOGLEVEL"),
+		"HIVE_NODETYPE":         "full",
+
+		"HIVE_L1_URL":             fmt.Sprintf("http://%s:%d", d.L1.IP, d.L1.HTTPPort),
+		"HIVE_L2_URL":             fmt.Sprintf("http://%s:%d", d.L2.IP, d.L2.HTTPPort),
+		"HIVE_L1_ETH_RPC_FLAG":    fmt.Sprintf("--l1=ws://%s:%d", d.L1.IP, d.L1.WSPort),
+		"HIVE_L2_ENGINE_RPC_FLAG": fmt.Sprintf("--l2=ws://%s:%d", d.L2.IP, d.L2.WSPort),
+		// TODO: avoid hardcoding p2p key
+		"HIVE_P2P_STATIC": fmt.Sprintf("--p2p.static=/%s/tcp/9003/p2p/16Uiu2HAmHqrXGts25TtKMBRHtvhWZLNypsobKoggpZye1XQtJpbZ", d.Rollup.IP),
+	}
+
+	optimismPortalOpt := hivesim.WithDynamicFile("/OptimismPortalProxy.json", bytesSource([]byte(d.OptimismPortal)))
+	opts := []hivesim.StartOption{executionOpts, optimismPortalOpt}
+	d.Verifier = &OpNode{d.T.StartClient(op.Name, opts...), 7545}
 	return nil
 }
 
