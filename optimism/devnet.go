@@ -231,6 +231,9 @@ func (d *Devnet) StartVerifier() error {
 		"HIVE_L2_URL":             fmt.Sprintf("http://%s:%d", d.L2.IP, d.L2.HTTPPort),
 		"HIVE_L1_ETH_RPC_FLAG":    fmt.Sprintf("--l1=ws://%s:%d", d.L1.IP, d.L1.WSPort),
 		"HIVE_L2_ENGINE_RPC_FLAG": fmt.Sprintf("--l2=ws://%s:%d", d.L2.IP, d.L2.WSPort),
+
+		"HIVE_SEQUENCER_ENABLED_FLAG": "",
+		"HIVE_SEQUENCER_KEY_FLAG":     "",
 		// TODO: avoid hardcoding p2p key
 		"HIVE_P2P_STATIC": fmt.Sprintf("--p2p.static=/%s/tcp/9003/p2p/16Uiu2HAmHqrXGts25TtKMBRHtvhWZLNypsobKoggpZye1XQtJpbZ", d.Rollup.IP),
 	}
