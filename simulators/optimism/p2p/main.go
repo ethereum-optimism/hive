@@ -40,6 +40,7 @@ func runP2PTests(t *hivesim.T) {
 	d.InitL2()
 	d.StartL2()
 	d.StartOp()
+	d.StartVerifier()
 	d.StartL2OS()
 	d.StartBSS()
 
