@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/ethereum/hive/hivesim"
+	"github.com/ethereum/hive/optimism"
 )
 
 func main() {
@@ -28,19 +29,17 @@ func main() {
 func runP2PTests(t *hivesim.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-	d := Devnet{
-		t:     t,
-		nodes: make(map[string]*hivesim.ClientDefinition),
-		ctx:   ctx,
+	d := optimism.Devnet{
+		T:     t,
+		Nodes: make(map[string]*hivesim.ClientDefinition),
+		Ctx:   ctx,
 	}
 	d.Start()
 	d.Wait()
 	d.DeployL1()
 	d.InitL2()
 	d.StartL2()
-	d.InitOpSequencer()
-	d.StartOpSequencer()
-	d.StartOpVerifier()
+	d.StartOp()
 	d.StartL2OS()
 	d.StartBSS()
 
