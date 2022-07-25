@@ -83,6 +83,9 @@ workflows:
     jobs:
       - go-test
       - build
-      - hive-tests:
+      - hive-rpc-tests:
+          requires: ["build"]
+          context: slack
+      - hive-p2p-tests:
           requires: ["build"]
           context: slack
