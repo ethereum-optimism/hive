@@ -2,6 +2,7 @@ package optimism
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"os"
 
@@ -240,8 +241,11 @@ func (d *Devnet) StartVerifier() error {
 		"HIVE_P2P_STATIC_FLAG": fmt.Sprintf("--p2p.static=/ip4/%s/tcp/9003/p2p/16Uiu2HAmHqrXGts25TtKMBRHtvhWZLNypsobKoggpZye1XQtJpbZ", d.Rollup.IP),
 	}
 
+	p2pNodeKey, _ := hex.DecodeString("d30e180aa6c25bac3ba2f0965af5da1934dbabe4505c92ddd1459e5cec27a882")
+
 	optimismPortalOpt := hivesim.WithDynamicFile("/OptimismPortalProxy.json", bytesSource([]byte(d.OptimismPortal)))
-	opts := []hivesim.StartOption{executionOpts, optimismPortalOpt}
+	p2pNodeKeyOpt := hivesim.WithDynamicFile("/config/p2p-node-key.txt", bytesSource([]byte(p2pNodeKey)))
+	opts := []hivesim.StartOption{executionOpts, optimismPortalOpt, p2pNodeKeyOpt}
 	d.Verifier = &OpNode{d.T.StartClient(op.Name, opts...), 7545}
 	return nil
 }
