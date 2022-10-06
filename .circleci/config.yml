@@ -25,7 +25,7 @@ jobs:
   # to be able to talk to the docker containers it creates.
   run-hive-sim:
     machine:
-      image: ubuntu-2004:202201-02
+      image: ubuntu-2204:2022.07.1
       docker_layer_caching: true
     parameters:
       sim:
