@@ -7,7 +7,7 @@ jobs:
   # This job builds the hive executable and stores it in the workspace.
   build:
     docker:
-      - image: cimg/go:1.18
+      - image: cimg/go:1.19
     steps:
       # Build it.
       - checkout
@@ -63,7 +63,7 @@ jobs:
   # This job runs the go unit tests.
   go-test:
     docker:
-      - image: cimg/go:1.18
+      - image: cimg/go:1.19
     steps:
       # Get the source.
       - checkout
