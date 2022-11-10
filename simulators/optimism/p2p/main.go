@@ -213,8 +213,10 @@ waitLoop:
 		return seqStat, nil
 	}
 
+	// NB: head is from seq, id is from verif
 	checkCanon := func(i int, head uint64, id eth.BlockID) error {
-		if head-id.Number > maxReplicaLag {
+		// Convert to ints to stop this from underflowing and inccorectly error if the replica is ahead
+		if int(head)-int(id.Number) > maxReplicaLag {
 			return fmt.Errorf("replica %d: too far behind sequencer. seq head: %d, replica head: %d", i, head, id.Number)
 		}
 		bl, err := seqEthCl.BlockByNumber(ctx, big.NewInt(int64(id.Number)))
