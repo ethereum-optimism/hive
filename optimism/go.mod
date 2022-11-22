@@ -6,12 +6,12 @@ replace github.com/ethereum/go-ethereum v1.10.26 => github.com/ethereum-optimism
 
 require (
 	github.com/ethereum-optimism/go-ethereum-hdwallet v0.1.3
-	github.com/ethereum-optimism/optimism/op-batcher v0.10.0
-	github.com/ethereum-optimism/optimism/op-bindings v0.10.0
-	github.com/ethereum-optimism/optimism/op-chain-ops v0.10.0
-	github.com/ethereum-optimism/optimism/op-e2e v0.10.0
-	github.com/ethereum-optimism/optimism/op-node v0.10.0
-	github.com/ethereum-optimism/optimism/op-proposer v0.10.0
+	github.com/ethereum-optimism/optimism/op-batcher v0.10.1
+	github.com/ethereum-optimism/optimism/op-bindings v0.10.1
+	github.com/ethereum-optimism/optimism/op-chain-ops v0.10.1
+	github.com/ethereum-optimism/optimism/op-e2e v0.10.1
+	github.com/ethereum-optimism/optimism/op-node v0.10.1
+	github.com/ethereum-optimism/optimism/op-proposer v0.10.1
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/ethereum/hive v0.0.0-20220727121216-02ad57aaf9c1
 	github.com/stretchr/testify v1.8.0

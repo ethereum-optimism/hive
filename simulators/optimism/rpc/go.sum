@@ -132,6 +132,8 @@ github.com/ethereum-optimism/go-ethereum-hdwallet v0.1.3 h1:RWHKLhCrQThMfch+QJ1Z
 github.com/ethereum-optimism/go-ethereum-hdwallet v0.1.3/go.mod h1:QziizLAiF0KqyLdNJYD7O5cpDlaFMNZzlxYNcWsJUxs=
 github.com/ethereum-optimism/hive v0.0.0-20220929220349-8cbb5d7fffe7 h1:OW94CEw+LqUtJYp4EtFkeXzzH7/UoismFE+kuogEBOA=
 github.com/ethereum-optimism/hive v0.0.0-20220929220349-8cbb5d7fffe7/go.mod h1:SH5X2jsgBzhSFkcG2OD9O8gTC4iXU1HycjLiWp/oDs0=
+github.com/ethereum-optimism/hive/optimism v0.0.0-20221108003315-927ff05b256c h1:EgKLyT+Grz3au4/+aZoj5TjhligTJVxdkNzUMd/BM+Q=
+github.com/ethereum-optimism/hive/optimism v0.0.0-20221108003315-927ff05b256c/go.mod h1:Yt3Vge7w1cWgfZLT+TaWq+scTYtsfMz0kz1BbeGTPQo=
 github.com/ethereum-optimism/op-geth v0.0.0-20221104231810-30db39cae2be h1:8TdM3M7FjZkrYeGGX9nEVtDDlZ5RiuHtc0mbi5bGKyY=
 github.com/ethereum-optimism/op-geth v0.0.0-20221104231810-30db39cae2be/go.mod h1:1g9UmZgEINqvYfXmWOUCRJX9fxegeOHudVkLCRAXO5Y=
 github.com/ethereum-optimism/optimism/op-batcher v0.10.0 h1:mI3udjjhK7FRoYnr7PNRSRPNldm7Vn1X1Kpl2Mixpkg=

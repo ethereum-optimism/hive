@@ -56,7 +56,7 @@ func (p *PoWChainGenerator) Generate(genesis *setup.Eth1Genesis) ([]*types.Block
 	db := rawdb.NewMemoryDatabase()
 	engine := ethash.New(p.Config, nil, false)
 	insta := instaSeal{engine}
-	genesisBlock := genesis.Genesis.ToBlock(db)
+	genesisBlock := genesis.Genesis.ToBlock()
 	p.blocks, _ = core.GenerateChain(genesis.Genesis.Config, genesisBlock, insta, db, p.BlockCount, p.GenFunction)
 	return p.blocks, nil
 }

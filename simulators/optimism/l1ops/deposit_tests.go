@@ -235,24 +235,44 @@ func erc20RoundtripTest(t *hivesim.T, env *optimism.TestEnv) {
 
 	// Get withdrawal parameters
 	proofClient := gethclient.New(env.Devnet.GetOpL2Engine(0).RPC())
-	wParams, err := withdrawals.FinalizeWithdrawalParameters(env.Ctx(), proofClient, l2, tx.Hash(), finHeader)
+	wParams, err := withdrawals.ProveWithdrawalParameters(env.Ctx(), proofClient, l2, tx.Hash(), finHeader)
 	require.NoError(t, err)
 
 	// Finalize the withdrawal
 	portal := env.Devnet.Bindings.BindingsL1.OptimismPortal
-	finTx, err := portal.FinalizeWithdrawalTransaction(
+
+	withdrawalTx := bindings.TypesWithdrawalTransaction{
+		Nonce:    wParams.Nonce,
+		Sender:   wParams.Sender,
+		Target:   wParams.Target,
+		Value:    wParams.Value,
+		GasLimit: wParams.GasLimit,
+		Data:     wParams.Data,
+	}
+
+	proveTx, err := portal.ProveWithdrawalTransaction(
 		l1Opts,
-		bindings.TypesWithdrawalTransaction{
-			Nonce:    wParams.Nonce,
-			Sender:   wParams.Sender,
-			Target:   wParams.Target,
-			Value:    wParams.Value,
-			GasLimit: wParams.GasLimit,
-			Data:     wParams.Data,
-		},
+		withdrawalTx,
 		wParams.BlockNumber,
 		wParams.OutputRootProof,
 		wParams.WithdrawalProof,
+	)
+	require.NoError(t, err)
+	_, err = optimism.WaitReceiptOK(env.TimeoutCtx(time.Minute), l1, proveTx.Hash())
+	require.NoError(t, err)
+
+	// Await finalization period
+	_, err = withdrawals.WaitForFinalizationPeriod(
+		env.TimeoutCtx(5*time.Minute),
+		l1,
+		env.Devnet.Deployments.OptimismPortalProxy,
+		wParams.BlockNumber,
+	)
+	require.NoError(t, err)
+
+	finTx, err := portal.FinalizeWithdrawalTransaction(
+		l1Opts,
+		withdrawalTx,
 	)
 	require.NoError(t, err)
 	_, err = optimism.WaitReceiptOK(env.TimeoutCtx(time.Minute), l1, finTx.Hash())
