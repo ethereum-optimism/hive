@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/ethereum/go-ethereum/ethclient/gethclient"
 	"math/big"
 	"math/rand"
 	"time"
@@ -17,6 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/ethclient/gethclient"
 	"github.com/ethereum/go-ethereum/params"
 	"github.com/ethereum/hive/hivesim"
 	"github.com/ethereum/hive/optimism"
@@ -227,9 +227,9 @@ func erc20RoundtripTest(t *hivesim.T, env *optimism.TestEnv) {
 		env.Devnet.Deployments.OptimismPortalProxy,
 		receipt.BlockNumber,
 	)
+	require.NoError(t, err)
 
 	// Get the last block number
-	require.NoError(t, err)
 	finHeader, err := l2.HeaderByNumber(env.Ctx(), big.NewInt(int64(finBlockNum)))
 	require.NoError(t, err)
 
@@ -238,9 +238,7 @@ func erc20RoundtripTest(t *hivesim.T, env *optimism.TestEnv) {
 	wParams, err := withdrawals.ProveWithdrawalParameters(env.Ctx(), proofClient, l2, tx.Hash(), finHeader)
 	require.NoError(t, err)
 
-	// Finalize the withdrawal
-	portal := env.Devnet.Bindings.BindingsL1.OptimismPortal
-
+	// Create a withdrawalTx
 	withdrawalTx := bindings.TypesWithdrawalTransaction{
 		Nonce:    wParams.Nonce,
 		Sender:   wParams.Sender,
@@ -250,6 +248,8 @@ func erc20RoundtripTest(t *hivesim.T, env *optimism.TestEnv) {
 		Data:     wParams.Data,
 	}
 
+	// Prove the withdrawal
+	portal := env.Devnet.Bindings.BindingsL1.OptimismPortal
 	proveTx, err := portal.ProveWithdrawalTransaction(
 		l1Opts,
 		withdrawalTx,
@@ -266,10 +266,11 @@ func erc20RoundtripTest(t *hivesim.T, env *optimism.TestEnv) {
 		env.TimeoutCtx(5*time.Minute),
 		l1,
 		env.Devnet.Deployments.OptimismPortalProxy,
-		wParams.BlockNumber,
+		receipt.BlockNumber,
 	)
 	require.NoError(t, err)
 
+	// finalize the withdrawal
 	finTx, err := portal.FinalizeWithdrawalTransaction(
 		l1Opts,
 		withdrawalTx,

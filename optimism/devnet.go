@@ -442,6 +442,11 @@ func (d *Devnet) InitChain(maxSeqDrift uint64, seqWindowSize uint64, chanTimeout
 		FundDevAccounts: true,
 	}
 
+	err := config.InitDeveloperDeployedAddresses()
+	if err != nil {
+		d.T.Fatalf("failed to initialize developer deployed addresses: %v", err)
+	}
+
 	l1Genesis, err := genesis.BuildL1DeveloperGenesis(config)
 	if err != nil {
 		d.T.Fatalf("failed to create l1 genesis: %v", err)
