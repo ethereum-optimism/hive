@@ -430,8 +430,7 @@ func (d *Devnet) InitChain(maxSeqDrift uint64, seqWindowSize uint64, chanTimeout
 		L2GenesisBlockParentHash:    common.Hash{},
 		L2GenesisBlockBaseFeePerGas: uint642big(1000_000_000),
 
-		L2CrossDomainMessengerOwner: common.Address{0: 0x42, 19: 0xf2},           // tbd
-		L1ERC721BridgeProxy:         common.Address{0: 0x42, 18: 0xa5, 19: 0x7b}, // tbd
+		L2CrossDomainMessengerOwner: common.Address{0: 0x42, 19: 0xf2}, // tbd
 		GasPriceOracleOverhead:      2100,
 		GasPriceOracleScalar:        1000_000,
 		DeploymentWaitConfirmations: 1,
