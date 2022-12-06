@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/ethereum/go-ethereum/ethclient/gethclient"
 	"math/big"
 	"time"
+
+	"github.com/ethereum/go-ethereum/ethclient/gethclient"
 
 	"github.com/ethereum-optimism/optimism/op-bindings/bindings"
 	"github.com/ethereum-optimism/optimism/op-bindings/predeploys"
@@ -49,7 +50,7 @@ func simpleWithdrawalTest(t *hivesim.T, env *optimism.TestEnv) {
 	require.NoError(t, err)
 
 	proofClient := gethclient.New(env.Devnet.GetOpL2Engine(0).RPC())
-	wParams, err := withdrawals.ProveWithdrawalParameters(env.Ctx(), proofClient, l2, initTx.Hash(), finHeader)
+	wParams, err := withdrawals.ProveWithdrawalParameters(env.Ctx(), proofClient, l2, initTx.Hash(), finHeader, &env.Devnet.Bindings.BindingsL1.L2OutputOracle.L2OutputOracleCaller)
 	require.NoError(t, err)
 
 	portal, err := bindings.NewOptimismPortal(
@@ -76,7 +77,7 @@ func simpleWithdrawalTest(t *hivesim.T, env *optimism.TestEnv) {
 	proveTx, err := portal.ProveWithdrawalTransaction(
 		l1Opts,
 		withdrawalTx,
-		wParams.BlockNumber,
+		wParams.L2OutputIndex,
 		wParams.OutputRootProof,
 		wParams.WithdrawalProof,
 	)
@@ -91,7 +92,7 @@ func simpleWithdrawalTest(t *hivesim.T, env *optimism.TestEnv) {
 		env.TimeoutCtx(5*time.Minute),
 		l1,
 		env.Devnet.Deployments.OptimismPortalProxy,
-		wParams.BlockNumber,
+		finHeader.Number,
 	)
 	require.NoError(t, err)
 

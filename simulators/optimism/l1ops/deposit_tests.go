@@ -235,7 +235,7 @@ func erc20RoundtripTest(t *hivesim.T, env *optimism.TestEnv) {
 
 	// Get withdrawal parameters
 	proofClient := gethclient.New(env.Devnet.GetOpL2Engine(0).RPC())
-	wParams, err := withdrawals.ProveWithdrawalParameters(env.Ctx(), proofClient, l2, tx.Hash(), finHeader)
+	wParams, err := withdrawals.ProveWithdrawalParameters(env.Ctx(), proofClient, l2, tx.Hash(), finHeader, &env.Devnet.Bindings.BindingsL1.L2OutputOracle.L2OutputOracleCaller)
 	require.NoError(t, err)
 
 	// Create a withdrawalTx
@@ -253,7 +253,7 @@ func erc20RoundtripTest(t *hivesim.T, env *optimism.TestEnv) {
 	proveTx, err := portal.ProveWithdrawalTransaction(
 		l1Opts,
 		withdrawalTx,
-		wParams.BlockNumber,
+		wParams.L2OutputIndex,
 		wParams.OutputRootProof,
 		wParams.WithdrawalProof,
 	)

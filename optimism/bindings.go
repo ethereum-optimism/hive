@@ -10,6 +10,7 @@ type BindingsL1 struct {
 	L1CrossDomainMessenger *bindings.L1CrossDomainMessenger
 	L1StandardBridge       *bindings.L1StandardBridge
 	SystemConfig           *bindings.SystemConfig
+	L2OutputOracle         *bindings.L2OutputOracle
 }
 
 func (d *Devnet) InitBindingsL1(eth1Index int) {
@@ -42,6 +43,13 @@ func (d *Devnet) InitBindingsL1(eth1Index int) {
 		return
 	}
 	d.Bindings.BindingsL1.SystemConfig = systemCfg
+
+	l2OO, err := bindings.NewL2OutputOracle(predeploys.DevL2OutputOracleAddr, cl)
+	if err != nil {
+		d.T.Fatalf("failed l2 output oracle binding: %v", err)
+		return
+	}
+	d.Bindings.BindingsL1.L2OutputOracle = l2OO
 }
 
 type BindingsL2 struct {

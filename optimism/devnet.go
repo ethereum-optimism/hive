@@ -402,6 +402,7 @@ func (d *Devnet) InitChain(maxSeqDrift uint64, seqWindowSize uint64, chanTimeout
 		L2OutputOracleSubmissionInterval: 6,
 		L2OutputOracleStartingTimestamp:  -1,
 		L2OutputOracleProposer:           d.Addresses.Proposer,
+		L2OutputOracleChallenger:         common.Address{}, // tbd
 
 		SystemConfigOwner: common.Address{0: 0x42, 1: 43},
 
