@@ -402,7 +402,6 @@ func (d *Devnet) InitChain(maxSeqDrift uint64, seqWindowSize uint64, chanTimeout
 		L2OutputOracleSubmissionInterval: 6,
 		L2OutputOracleStartingTimestamp:  -1,
 		L2OutputOracleProposer:           d.Addresses.Proposer,
-		L2OutputOracleOwner:              common.Address{}, // tbd
 
 		SystemConfigOwner: common.Address{0: 0x42, 1: 43},
 
@@ -430,7 +429,6 @@ func (d *Devnet) InitChain(maxSeqDrift uint64, seqWindowSize uint64, chanTimeout
 		L2GenesisBlockParentHash:    common.Hash{},
 		L2GenesisBlockBaseFeePerGas: uint642big(1000_000_000),
 
-		L2CrossDomainMessengerOwner: common.Address{0: 0x42, 19: 0xf2}, // tbd
 		GasPriceOracleOverhead:      2100,
 		GasPriceOracleScalar:        1000_000,
 		DeploymentWaitConfirmations: 1,
