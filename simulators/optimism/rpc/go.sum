@@ -134,8 +134,8 @@ github.com/ethereum-optimism/hive v0.0.0-20220929220349-8cbb5d7fffe7 h1:OW94CEw+
 github.com/ethereum-optimism/hive v0.0.0-20220929220349-8cbb5d7fffe7/go.mod h1:SH5X2jsgBzhSFkcG2OD9O8gTC4iXU1HycjLiWp/oDs0=
 github.com/ethereum-optimism/hive/optimism v0.0.0-20221108003315-927ff05b256c h1:EgKLyT+Grz3au4/+aZoj5TjhligTJVxdkNzUMd/BM+Q=
 github.com/ethereum-optimism/hive/optimism v0.0.0-20221108003315-927ff05b256c/go.mod h1:Yt3Vge7w1cWgfZLT+TaWq+scTYtsfMz0kz1BbeGTPQo=
-github.com/ethereum-optimism/op-geth v0.0.0-20221104231810-30db39cae2be h1:8TdM3M7FjZkrYeGGX9nEVtDDlZ5RiuHtc0mbi5bGKyY=
-github.com/ethereum-optimism/op-geth v0.0.0-20221104231810-30db39cae2be/go.mod h1:1g9UmZgEINqvYfXmWOUCRJX9fxegeOHudVkLCRAXO5Y=
+github.com/ethereum-optimism/op-geth v0.0.0-20221205191237-0678a130d790 h1:QJL/gtfxGe11tApZIPCeKERQHrLZMAG0RwGV9eTgtvE=
+github.com/ethereum-optimism/op-geth v0.0.0-20221205191237-0678a130d790/go.mod h1:p0Yox74PhYlq1HvijrCBCD9A3cI7rXco7hT6KrQr+rY=
 github.com/ethereum-optimism/optimism/op-batcher v0.10.0 h1:mI3udjjhK7FRoYnr7PNRSRPNldm7Vn1X1Kpl2Mixpkg=
 github.com/ethereum-optimism/optimism/op-batcher v0.10.0/go.mod h1:u14Dchn2F0sdWxH/V6wtNVFCQJAfrURb/mwvYP/RiMk=
 github.com/ethereum-optimism/optimism/op-bindings v0.10.0 h1:M2nwcOXH9YiRDH6UXnzHI+/eAM5UoFWp7HTlAWrZ4Os=
@@ -534,8 +534,9 @@ github.com/spaolacci/murmur3 v1.1.0/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2
 github.com/status-im/keycard-go v0.0.0-20211109104530-b0e0482ba91d h1:vmirMegf1vqPJ+lDBxLQ0MAt3tz+JL57UPxu44JBOjA=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
-github.com/stretchr/objx v0.4.0 h1:M2gUjqZET1qApGOWNSnZ49BAIMX4F/1plDv3+l31EJ4=
 github.com/stretchr/objx v0.4.0/go.mod h1:YvHI0jy2hoMjB+UWwv71VJQ9isScKT/TqJzVSSt89Yw=
+github.com/stretchr/objx v0.5.0 h1:1zr/of2m5FGMsad5YfcqgdqdWrIhu+EBEJRhR1U7z/c=
+github.com/stretchr/objx v0.5.0/go.mod h1:Yh+to48EsGEfYuaHDzXPcE3xhTkx73EhmCGUpEOglKo=
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
@@ -543,8 +544,9 @@ github.com/stretchr/testify v1.5.1/go.mod h1:5W2xD1RspED5o8YsWQXVCued0rvSQ+mT+I5
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.7.2/go.mod h1:R6va5+xMeoiuVRoj+gSkQ7d3FALtqAAGI1FQKckRals=
-github.com/stretchr/testify v1.8.0 h1:pSgiaMZlXftHpm5L7V1+rVB+AZJydKsMxsQBIJw4PKk=
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
+github.com/stretchr/testify v1.8.1 h1:w7B6lhMri9wdJUVmEZPGGhZzrYTPvgJArz7wNPgYKsk=
+github.com/stretchr/testify v1.8.1/go.mod h1:w2LPCIKwWwSfY2zedu0+kehJoqGctiVI29o6fzry7u4=
 github.com/syndtr/goleveldb v1.0.0/go.mod h1:ZVVdQEZoIme9iO1Ch2Jdy24qqXrMMOU6lpPAyBWyWuQ=
 github.com/syndtr/goleveldb v1.0.1-0.20220614013038-64ee5596c38a h1:1ur3QoCqvE5fl+nylMaIr9PVV1w343YRDtsy+Rwu7XI=
 github.com/syndtr/goleveldb v1.0.1-0.20220614013038-64ee5596c38a/go.mod h1:RRCYJbIwD5jmqPI9XoAFR0OcDxqUctll6zUj/+B4S48=

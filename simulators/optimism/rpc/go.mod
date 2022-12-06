@@ -2,7 +2,7 @@ module github.com/ethereum/hive/simulators/optimism/rpc
 
 go 1.18
 
-replace github.com/ethereum/go-ethereum v1.10.26 => github.com/ethereum-optimism/op-geth v0.0.0-20221104231810-30db39cae2be
+replace github.com/ethereum/go-ethereum v1.10.26 => github.com/ethereum-optimism/op-geth v0.0.0-20221205191237-0678a130d790
 
 replace github.com/ethereum/hive v0.0.0-20220727121216-02ad57aaf9c1 => github.com/ethereum-optimism/hive v0.0.0-20220929220349-8cbb5d7fffe7
 
@@ -13,7 +13,7 @@ require (
 	github.com/ethereum/hive v0.0.0-20220727121216-02ad57aaf9c1
 	github.com/ethereum/hive/optimism v0.0.0
 	github.com/kr/pretty v0.3.0
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 )
 
 require (
