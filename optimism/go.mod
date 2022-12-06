@@ -6,12 +6,12 @@ replace github.com/ethereum/go-ethereum v1.10.26 => github.com/ethereum-optimism
 
 require (
 	github.com/ethereum-optimism/go-ethereum-hdwallet v0.1.3
-	github.com/ethereum-optimism/optimism/op-batcher v0.10.2
-	github.com/ethereum-optimism/optimism/op-bindings v0.10.2
-	github.com/ethereum-optimism/optimism/op-chain-ops v0.10.2
-	github.com/ethereum-optimism/optimism/op-e2e v0.10.2
-	github.com/ethereum-optimism/optimism/op-node v0.10.2
-	github.com/ethereum-optimism/optimism/op-proposer v0.10.2
+	github.com/ethereum-optimism/optimism/op-batcher v0.10.3
+	github.com/ethereum-optimism/optimism/op-bindings v0.10.3
+	github.com/ethereum-optimism/optimism/op-chain-ops v0.10.3
+	github.com/ethereum-optimism/optimism/op-e2e v0.10.3
+	github.com/ethereum-optimism/optimism/op-node v0.10.3
+	github.com/ethereum-optimism/optimism/op-proposer v0.10.3
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/ethereum/hive v0.0.0-20220727121216-02ad57aaf9c1
 	github.com/stretchr/testify v1.8.1
@@ -39,7 +39,7 @@ require (
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/edsrzf/mmap-go v1.1.0 // indirect
 	github.com/elastic/gosigar v0.14.2 // indirect
-	github.com/ethereum-optimism/optimism/op-service v0.10.2 // indirect
+	github.com/ethereum-optimism/optimism/op-service v0.10.3 // indirect
 	github.com/fjl/memsize v0.0.1 // indirect
 	github.com/flynn/noise v1.0.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
