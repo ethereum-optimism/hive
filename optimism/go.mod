@@ -6,16 +6,16 @@ replace github.com/ethereum/go-ethereum v1.10.26 => github.com/ethereum-optimism
 
 require (
 	github.com/ethereum-optimism/go-ethereum-hdwallet v0.1.3
-	github.com/ethereum-optimism/optimism/op-batcher v0.10.6
-	github.com/ethereum-optimism/optimism/op-bindings v0.10.6
-	github.com/ethereum-optimism/optimism/op-chain-ops v0.10.6
-	github.com/ethereum-optimism/optimism/op-e2e v0.10.6
-	github.com/ethereum-optimism/optimism/op-node v0.10.6
-	github.com/ethereum-optimism/optimism/op-proposer v0.10.6
+	github.com/ethereum-optimism/optimism/op-batcher v0.10.13
+	github.com/ethereum-optimism/optimism/op-bindings v0.10.13
+	github.com/ethereum-optimism/optimism/op-chain-ops v0.10.13
+	github.com/ethereum-optimism/optimism/op-e2e v0.10.13
+	github.com/ethereum-optimism/optimism/op-node v0.10.13
+	github.com/ethereum-optimism/optimism/op-proposer v0.10.13
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/ethereum/hive v0.0.0-20220727121216-02ad57aaf9c1
 	github.com/stretchr/testify v1.8.1
-	golang.org/x/sync v0.0.0-20220907140024-f12130a52804
+	golang.org/x/sync v0.1.0
 )
 
 require (
@@ -37,11 +37,14 @@ require (
 	github.com/decred/dcrd/crypto/blake256 v1.0.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
+	github.com/dyson/certman v0.3.0 // indirect
 	github.com/edsrzf/mmap-go v1.1.0 // indirect
 	github.com/elastic/gosigar v0.14.2 // indirect
-	github.com/ethereum-optimism/optimism/op-service v0.10.6 // indirect
+	github.com/ethereum-optimism/optimism/op-service v0.10.13 // indirect
+	github.com/ethereum-optimism/optimism/op-signer v0.1.0 // indirect
 	github.com/fjl/memsize v0.0.1 // indirect
 	github.com/flynn/noise v1.0.0 // indirect
+	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
@@ -62,7 +65,6 @@ require (
 	github.com/huin/goupnp v1.0.3 // indirect
 	github.com/ipfs/go-cid v0.3.2 // indirect
 	github.com/ipfs/go-datastore v0.6.0 // indirect
-	github.com/ipfs/go-ds-leveldb v0.5.0 // indirect
 	github.com/ipfs/go-log v1.0.5 // indirect
 	github.com/ipfs/go-log/v2 v2.5.1 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect

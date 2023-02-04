@@ -9,7 +9,7 @@ replace github.com/ethereum/hive v0.0.0-20220727121216-02ad57aaf9c1 => github.co
 replace github.com/ethereum/hive/optimism v0.0.0 => github.com/ethereum-optimism/hive/optimism v0.0.0-20221108003315-927ff05b256c
 
 require (
-	github.com/ethereum-optimism/optimism/op-node v0.10.6
+	github.com/ethereum-optimism/optimism/op-node v0.10.13
 	github.com/ethereum/go-ethereum v1.10.26
 	github.com/ethereum/hive v0.0.0-20220727121216-02ad57aaf9c1
 	github.com/ethereum/hive/optimism v0.0.0
@@ -39,11 +39,11 @@ require (
 	github.com/elastic/gosigar v0.14.2 // indirect
 	github.com/ethereum-optimism/go-ethereum-hdwallet v0.1.3 // indirect
 	github.com/ethereum-optimism/optimism/op-batcher v0.10.0 // indirect
-	github.com/ethereum-optimism/optimism/op-bindings v0.10.6 // indirect
-	github.com/ethereum-optimism/optimism/op-chain-ops v0.10.6 // indirect
+	github.com/ethereum-optimism/optimism/op-bindings v0.10.13 // indirect
+	github.com/ethereum-optimism/optimism/op-chain-ops v0.10.13 // indirect
 	github.com/ethereum-optimism/optimism/op-e2e v0.10.0 // indirect
 	github.com/ethereum-optimism/optimism/op-proposer v0.10.0 // indirect
-	github.com/ethereum-optimism/optimism/op-service v0.10.6 // indirect
+	github.com/ethereum-optimism/optimism/op-service v0.10.13 // indirect
 	github.com/fjl/memsize v0.0.1 // indirect
 	github.com/flynn/noise v1.0.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
@@ -66,7 +66,6 @@ require (
 	github.com/huin/goupnp v1.0.3 // indirect
 	github.com/ipfs/go-cid v0.3.2 // indirect
 	github.com/ipfs/go-datastore v0.6.0 // indirect
-	github.com/ipfs/go-ds-leveldb v0.5.0 // indirect
 	github.com/ipfs/go-log v1.0.5 // indirect
 	github.com/ipfs/go-log/v2 v2.5.1 // indirect
 	github.com/jackpal/go-nat-pmp v1.0.2 // indirect

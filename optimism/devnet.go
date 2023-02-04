@@ -293,20 +293,19 @@ func (d *Devnet) AddOpBatcher(eth1Index int, l2EngIndex int, opNodeIndex int, op
 	l2Engine := d.GetOpL2Engine(l2EngIndex)
 
 	defaultSettings := HiveUnpackParams{
-		opbf.L1EthRpcFlag.EnvVar:                   eth1Node.WsRpcEndpoint(),
-		opbf.L2EthRpcFlag.EnvVar:                   l2Engine.WsRpcEndpoint(),
-		opbf.RollupRpcFlag.EnvVar:                  opNode.HttpRpcEndpoint(),
-		opbf.MinL1TxSizeBytesFlag.EnvVar:           "1",
-		opbf.MaxL1TxSizeBytesFlag.EnvVar:           "120000",
-		opbf.ChannelTimeoutFlag.EnvVar:             "40",
-		opbf.PollIntervalFlag.EnvVar:               "1s",
-		opbf.NumConfirmationsFlag.EnvVar:           "1",
-		opbf.SafeAbortNonceTooLowCountFlag.EnvVar:  "3",
-		opbf.ResubmissionTimeoutFlag.EnvVar:        "30s",
-		opbf.MnemonicFlag.EnvVar:                   d.MnemonicCfg.Mnemonic,
-		opbf.SequencerHDPathFlag.EnvVar:            d.MnemonicCfg.Batcher,
-		opbf.SequencerBatchInboxAddressFlag.EnvVar: d.RollupCfg.BatchInboxAddress.String(),
-		"OP_BATCHER_LOG_LEVEL":                     "debug",
+		opbf.L1EthRpcFlag.EnvVar:                  eth1Node.WsRpcEndpoint(),
+		opbf.L2EthRpcFlag.EnvVar:                  l2Engine.WsRpcEndpoint(),
+		opbf.RollupRpcFlag.EnvVar:                 opNode.HttpRpcEndpoint(),
+		opbf.TargetL1TxSizeBytesFlag.EnvVar:       "624",
+		opbf.MaxL1TxSizeBytesFlag.EnvVar:          "120000",
+		opbf.SubSafetyMarginFlag.EnvVar:           "4",
+		opbf.PollIntervalFlag.EnvVar:              "1s",
+		opbf.NumConfirmationsFlag.EnvVar:          "1",
+		opbf.SafeAbortNonceTooLowCountFlag.EnvVar: "3",
+		opbf.ResubmissionTimeoutFlag.EnvVar:       "30s",
+		opbf.MnemonicFlag.EnvVar:                  d.MnemonicCfg.Mnemonic,
+		opbf.SequencerHDPathFlag.EnvVar:           d.MnemonicCfg.Batcher,
+		"OP_BATCHER_LOG_LEVEL":                    "debug",
 	}
 	input := []hivesim.StartOption{defaultSettings.Params()}
 	input = append(input, opts...)
@@ -419,11 +418,9 @@ func (d *Devnet) InitChain(maxSeqDrift uint64, seqWindowSize uint64, chanTimeout
 		L1GenesisBlockBaseFeePerGas: uint642big(1000_000_000), // 1 gwei
 
 		L2GenesisBlockNonce:         0,
-		L2GenesisBlockExtraData:     []byte{},
 		L2GenesisBlockGasLimit:      15_000_000,
 		L2GenesisBlockDifficulty:    uint642big(0),
 		L2GenesisBlockMixHash:       common.Hash{},
-		L2GenesisBlockCoinbase:      common.Address{0: 0x42, 19: 0xf0}, // matching OptimismL2FeeRecipient
 		L2GenesisBlockNumber:        0,
 		L2GenesisBlockGasUsed:       0,
 		L2GenesisBlockParentHash:    common.Hash{},
