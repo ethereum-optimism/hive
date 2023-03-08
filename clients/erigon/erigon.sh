@@ -39,7 +39,7 @@ set -e
 erigon=/usr/local/bin/erigon
 
 if [ "$HIVE_LOGLEVEL" != "" ]; then
-    FLAGS="$FLAGS --verbosity=$HIVE_LOGLEVEL"
+    FLAGS="$FLAGS --log.console.verbosity=$HIVE_LOGLEVEL"
 fi
 
 if [ "$HIVE_BOOTNODE" != "" ]; then
@@ -135,6 +135,6 @@ if [ "$HIVE_TERMINAL_TOTAL_DIFFICULTY" != "" ]; then
 fi
 
 # Launch the main client.
-FLAGS="$FLAGS --nat=none"
+FLAGS="$FLAGS --nat=none --externalcl"
 echo "Running erigon with flags $FLAGS"
 $erigon $FLAGS

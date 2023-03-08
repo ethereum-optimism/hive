@@ -99,20 +99,21 @@ if [ -d /blocks ]; then
     IMPORTFLAGS="$IMPORTFLAGS $blocks"
 fi
 
-
-# Configure mining.
-if [ "$HIVE_MINER" != "" ]; then
-    FLAGS="$FLAGS --miner-enabled --miner-coinbase=$HIVE_MINER"
-    # For clique mining, besu uses the node key as the block signing key.
-    if [ "$HIVE_CLIQUE_PRIVATEKEY" != "" ]; then
-        echo "Importing clique signing key as node key..."
-        echo "$HIVE_CLIQUE_PRIVATEKEY" > /opt/besu/key
+if [ "$HIVE_BOOTNODE" == "" ]; then
+    # Configure mining.
+    if [ "$HIVE_MINER" != "" ]; then
+        FLAGS="$FLAGS --miner-enabled --miner-coinbase=$HIVE_MINER"
+        # For clique mining, besu uses the node key as the block signing key.
+        if [ "$HIVE_CLIQUE_PRIVATEKEY" != "" ]; then
+            echo "Importing clique signing key as node key..."
+            echo "$HIVE_CLIQUE_PRIVATEKEY" > /opt/besu/key
+        fi
     fi
 fi
 if [ "$HIVE_MINER_EXTRA" != "" ]; then
     FLAGS="$FLAGS --miner-extra-data=$HIVE_MINER_EXTRA"
 fi
-FLAGS="$FLAGS --min-gas-price=16 --tx-pool-price-bump=0"
+FLAGS="$FLAGS --min-gas-price=1 --tx-pool-price-bump=0 --tx-pool-limit-by-account-percentage=1"
 
 # Configure peer-to-peer networking.
 if [ "$HIVE_BOOTNODE" != "" ]; then
@@ -132,7 +133,7 @@ fi
 if [ "$HIVE_NODETYPE" == "light" ]; then
     echo "Ignoring HIVE_NODETYPE == light: besu does not support light client"
 elif [ "$HIVE_NODETYPE" == "" ] && [ "$HIVE_TERMINAL_TOTAL_DIFFICULTY" == "" ]; then
-    FLAGS="$FLAGS --sync-mode=FAST --fast-sync-min-peers=1 --Xsynchronizer-fast-sync-pivot-distance=0"
+    FLAGS="$FLAGS --sync-mode=X_SNAP"
 fi
 
 # Configure RPC.

@@ -10,29 +10,32 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	api "github.com/ethereum/go-ethereum/core/beacon"
 	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/trie"
 	"github.com/ethereum/hive/simulators/ethereum/engine/globals"
 )
 
 type CustomPayloadData struct {
-	ParentHash    *common.Hash
-	FeeRecipient  *common.Address
-	StateRoot     *common.Hash
-	ReceiptsRoot  *common.Hash
-	LogsBloom     *[]byte
-	PrevRandao    *common.Hash
-	Number        *uint64
-	GasLimit      *uint64
-	GasUsed       *uint64
-	Timestamp     *uint64
-	ExtraData     *[]byte
-	BaseFeePerGas *big.Int
-	BlockHash     *common.Hash
-	Transactions  *[][]byte
+	ParentHash        *common.Hash
+	FeeRecipient      *common.Address
+	StateRoot         *common.Hash
+	ReceiptsRoot      *common.Hash
+	LogsBloom         *[]byte
+	PrevRandao        *common.Hash
+	Number            *uint64
+	GasLimit          *uint64
+	GasUsed           *uint64
+	Timestamp         *uint64
+	ExtraData         *[]byte
+	BaseFeePerGas     *big.Int
+	BlockHash         *common.Hash
+	Transactions      *[][]byte
+	Withdrawals       types.Withdrawals
+	RemoveWithdrawals bool
 }
 
 // Construct a customized payload by taking an existing payload as base and mixing it CustomPayloadData
 // BlockHash is calculated automatically.
-func CustomizePayload(basePayload *api.ExecutableDataV1, customData *CustomPayloadData) (*api.ExecutableDataV1, error) {
+func CustomizePayload(basePayload *api.ExecutableData, customData *CustomPayloadData) (*api.ExecutableData, error) {
 	txs := basePayload.Transactions
 	if customData.Transactions != nil {
 		txs = *customData.Transactions
@@ -61,7 +64,6 @@ func CustomizePayload(basePayload *api.ExecutableDataV1, customData *CustomPaylo
 		Nonce:       types.BlockNonce{0}, // could be overwritten
 		BaseFee:     basePayload.BaseFeePerGas,
 	}
-
 	// Overwrite custom information
 	if customData.ParentHash != nil {
 		customPayloadHeader.ParentHash = *customData.ParentHash
@@ -99,9 +101,18 @@ func CustomizePayload(basePayload *api.ExecutableDataV1, customData *CustomPaylo
 	if customData.BaseFeePerGas != nil {
 		customPayloadHeader.BaseFee = customData.BaseFeePerGas
 	}
+	if customData.RemoveWithdrawals {
+		customPayloadHeader.WithdrawalsHash = nil
+	} else if customData.Withdrawals != nil {
+		h := types.DeriveSha(customData.Withdrawals, trie.NewStackTrie(nil))
+		customPayloadHeader.WithdrawalsHash = &h
+	} else if basePayload.Withdrawals != nil {
+		h := types.DeriveSha(types.Withdrawals(basePayload.Withdrawals), trie.NewStackTrie(nil))
+		customPayloadHeader.WithdrawalsHash = &h
+	}
 
 	// Return the new payload
-	return &api.ExecutableDataV1{
+	result := &api.ExecutableData{
 		ParentHash:    customPayloadHeader.ParentHash,
 		FeeRecipient:  customPayloadHeader.Coinbase,
 		StateRoot:     customPayloadHeader.Root,
@@ -116,7 +127,29 @@ func CustomizePayload(basePayload *api.ExecutableDataV1, customData *CustomPaylo
 		BaseFeePerGas: customPayloadHeader.BaseFee,
 		BlockHash:     customPayloadHeader.Hash(),
 		Transactions:  txs,
-	}, nil
+	}
+	if customData.RemoveWithdrawals {
+		result.Withdrawals = nil
+	} else if customData.Withdrawals != nil {
+		result.Withdrawals = customData.Withdrawals
+	} else if basePayload.Withdrawals != nil {
+		result.Withdrawals = basePayload.Withdrawals
+	}
+	return result, nil
+}
+
+func CustomizePayloadTransactions(basePayload *api.ExecutableData, customTransactions types.Transactions) (*api.ExecutableData, error) {
+	byteTxs := make([][]byte, 0)
+	for _, tx := range customTransactions {
+		bytes, err := tx.MarshalBinary()
+		if err != nil {
+			return nil, err
+		}
+		byteTxs = append(byteTxs, bytes)
+	}
+	return CustomizePayload(basePayload, &CustomPayloadData{
+		Transactions: &byteTxs,
+	})
 }
 
 func (customData *CustomPayloadData) String() string {
@@ -160,12 +193,15 @@ func (customData *CustomPayloadData) String() string {
 	if customData.Transactions != nil {
 		customFieldsList = append(customFieldsList, fmt.Sprintf("Transactions=%v", customData.Transactions))
 	}
+	if customData.Withdrawals != nil {
+		customFieldsList = append(customFieldsList, fmt.Sprintf("Withdrawals=%v", customData.Withdrawals))
+	}
 	return strings.Join(customFieldsList, ", ")
 }
 
 // This function generates an invalid payload by taking a base payload and modifying the specified field such that it ends up being invalid.
 // One small consideration is that the payload needs to contain transactions and specially transactions using the PREVRANDAO opcode for all the fields to be compatible with this function.
-func GenerateInvalidPayload(basePayload *api.ExecutableDataV1, payloadField InvalidPayloadBlockField) (*api.ExecutableDataV1, error) {
+func GenerateInvalidPayload(basePayload *api.ExecutableData, payloadField InvalidPayloadBlockField) (*api.ExecutableData, error) {
 
 	var customPayloadMod *CustomPayloadData
 	switch payloadField {
@@ -229,7 +265,7 @@ func GenerateInvalidPayload(basePayload *api.ExecutableDataV1, payloadField Inva
 		InvalidTransactionChainID:
 
 		if len(basePayload.Transactions) == 0 {
-			return nil, fmt.Errorf("No transactions available for modification")
+			return nil, fmt.Errorf("no transactions available for modification")
 		}
 		var baseTx types.Transaction
 		if err := baseTx.UnmarshalBinary(basePayload.Transactions[0]); err != nil {
@@ -280,7 +316,8 @@ func GenerateInvalidPayload(basePayload *api.ExecutableDataV1, payloadField Inva
 	}
 
 	if customPayloadMod == nil {
-		return basePayload, nil
+		copyPayload := *basePayload
+		return &copyPayload, nil
 	}
 
 	alteredPayload, err := CustomizePayload(basePayload, customPayloadMod)
@@ -289,4 +326,18 @@ func GenerateInvalidPayload(basePayload *api.ExecutableDataV1, payloadField Inva
 	}
 
 	return alteredPayload, nil
+}
+
+/*
+	 Generates an alternative withdrawals list that contains the same
+		amounts and accounts, but the order in the list is different, so
+		stateRoot of the resulting payload should be the same.
+*/
+func RandomizeWithdrawalsOrder(src types.Withdrawals) types.Withdrawals {
+	dest := make(types.Withdrawals, len(src))
+	perm := rand.Perm(len(src))
+	for i, v := range perm {
+		dest[v] = src[i]
+	}
+	return dest
 }

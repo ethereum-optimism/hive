@@ -19,19 +19,15 @@ cp /hive/input/config.yaml /data/testnet_setup
 # znrt encodes the values of these items between double quotes (""), which is against the spec:
 # https://github.com/ethereum/consensus-specs/blob/v1.1.10/configs/mainnet.yaml
 # Nimbus is the only client that complains about this.
-sed -i 's/TERMINAL_TOTAL_DIFFICULTY: "\([[:digit:]]\+\)"/TERMINAL_TOTAL_DIFFICULTY: \1/' /data/testnet_setup/config.yaml
-sed -i 's/TERMINAL_BLOCK_HASH: "\(0x[[:xdigit:]]\+\)"/TERMINAL_BLOCK_HASH: \1/' /data/testnet_setup/config.yaml
-sed -i 's/GENESIS_FORK_VERSION: "\(0x[[:xdigit:]]\+\)"/GENESIS_FORK_VERSION: \1/' /data/testnet_setup/config.yaml
-sed -i 's/ALTAIR_FORK_VERSION: "\(0x[[:xdigit:]]\+\)"/ALTAIR_FORK_VERSION: \1/' /data/testnet_setup/config.yaml
-sed -i 's/BELLATRIX_FORK_VERSION: "\(0x[[:xdigit:]]\+\)"/BELLATRIX_FORK_VERSION: \1/' /data/testnet_setup/config.yaml
-sed -i 's/CAPELLA_FORK_VERSION: "\(0x[[:xdigit:]]\+\)"/CAPELLA_FORK_VERSION: \1/' /data/testnet_setup/config.yaml
-sed -i 's/SHARDING_FORK_VERSION: "\(0x[[:xdigit:]]\+\)"/SHARDING_FORK_VERSION: \1/' /data/testnet_setup/config.yaml
+sed -i 's/"//g' /data/testnet_setup/config.yaml
+sed -i '/TERMINAL_BLOCK_HASH_ACTIVATION_EPOCH/d' /data/testnet_setup/config.yaml
 echo Using config.yaml
 cat /data/testnet_setup/config.yaml
 echo ""
 
 echo "${HIVE_ETH2_CONFIG_DEPOSIT_CONTRACT_ADDRESS:-0x1111111111111111111111111111111111111111}" > /data/testnet_setup/deposit_contract.txt
-echo "${HIVE_ETH2_DEPOSIT_DEPLOY_BLOCK_NUMBER:-0}" > /data/testnet_setup/deploy_block.txt
+echo "${HIVE_ETH2_DEPOSIT_DEPLOY_BLOCK_NUMBER:-0}" > /data/testnet_setup/deposit_contract_block.txt
+echo "${HIVE_ETH2_DEPOSIT_DEPLOY_BLOCK_HASH:-0}" > /data/testnet_setup/deposit_contract_block_hash.txt
 
 mkdir -p /data/beacon
 chmod 0700 /data/beacon
@@ -60,6 +56,9 @@ else
 fi
 metrics_option=$([[ "$HIVE_ETH2_METRICS_PORT" == "" ]] && echo "" || echo "--metrics --metrics-address=0.0.0.0 --metrics-port=$HIVE_ETH2_METRICS_PORT")
 
+builder_option=$([[ "$HIVE_ETH2_BUILDER_ENDPOINT" == "" ]] && echo "" || echo "--payload-builder=true --payload-builder-url=$HIVE_ETH2_BUILDER_ENDPOINT")
+echo BUILDER=$builder_option
+
 echo -n "0x7365637265747365637265747365637265747365637265747365637265747365" > /jwtsecret
 
 echo Starting Nimbus Beacon Node
@@ -72,7 +71,7 @@ echo Starting Nimbus Beacon Node
     --web3-url="$HIVE_ETH2_ETH1_ENGINE_RPC_ADDRS" \
     --jwt-secret=/jwtsecret \
     --num-threads=4 \
-    $bootnodes_option $metrics_option \
+    $bootnodes_option $metrics_option $builder_option \
     --nat="extip:${CONTAINER_IP}" \
     --listen-address=0.0.0.0 \
     --tcp-port="${HIVE_ETH2_P2P_TCP_PORT:-9000}" \

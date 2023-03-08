@@ -32,7 +32,9 @@ def merge_config:
       "Merge": {
         "Enabled": true,
         "TerminalTotalDifficulty": env.HIVE_TERMINAL_TOTAL_DIFFICULTY,
-      }
+        "TerminalBlockHash": env.HIVE_TERMINAL_BLOCK_HASH,
+        "TerminalBlockNumber": env.HIVE_TERMINAL_BLOCK_NUMBER,
+      } | remove_empty
     }
   else
     {}
@@ -44,14 +46,14 @@ def json_rpc_config:
     {
       "JsonRpc": {
         "JwtSecretFile": "/jwt.secret",
-        "EnabledModules": ["Eth", "Subscribe", "Trace", "TxPool", "Web3", "Personal", "Proof", "Net", "Parity", "Health"],
-        "AdditionalRpcUrls": ["http://0.0.0.0:8550|http;ws|net;eth;subscribe;engine;web3;client|no-auth", "http://0.0.0.0:8551|http;ws|net;eth;subscribe;engine;web3;client"]
+        "EnabledModules": ["Debug", "Eth", "Subscribe", "Trace", "TxPool", "Web3", "Personal", "Proof", "Net", "Parity", "Health"],
+        "AdditionalRpcUrls": ["http://0.0.0.0:8550|http;ws|debug;net;eth;subscribe;engine;web3;client|no-auth", "http://0.0.0.0:8551|http;ws|debug;net;eth;subscribe;engine;web3;client"]
       }
     }
   else
     {
       "JsonRpc": {
-        "EnabledModules": ["Eth", "Subscribe", "Trace", "TxPool", "Web3", "Personal", "Proof", "Net", "Parity", "Health"]
+        "EnabledModules": ["Debug", "Eth", "Subscribe", "Trace", "TxPool", "Web3", "Personal", "Proof", "Net", "Parity", "Health"]
       }
     }
   end

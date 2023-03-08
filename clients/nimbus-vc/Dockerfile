@@ -2,19 +2,21 @@
 
 FROM debian:buster-slim AS build
 
+ARG branch=unstable
+
 RUN apt-get update \
  && apt-get install -y --fix-missing build-essential make git libpcre3-dev librocksdb-dev curl \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-ENV NPROC=2
+RUN git clone --recurse-submodules --depth 1 --branch "${branch}" \
+    https://github.com/status-im/nimbus-eth2.git
 
-RUN git clone --depth 1 --branch unstable https://github.com/status-im/nimbus-eth2.git \
- && cd nimbus-eth2 \
- && make -j${NPROC} NIMFLAGS="--parallelBuild:${NPROC} -d:SECONDS_PER_SLOT=6" V=1 update
+WORKDIR /nimbus-eth2
 
-RUN cd nimbus-eth2 && \
-    make -j${NPROC} NIMFLAGS="--parallelBuild:${NPROC} -d:SECONDS_PER_SLOT=6" nimbus_validator_client && \
+RUN NPROC=$(nproc); make -j${NPROC} NIMFLAGS="--parallelBuild:${NPROC}" V=1 update
+
+RUN NPROC=$(nproc); make -j${NPROC} NIMFLAGS="--parallelBuild:${NPROC}" nimbus_validator_client && \
     mv build/nimbus_validator_client /usr/bin/
 
 # --------------------------------- #
@@ -30,10 +32,13 @@ RUN apt-get update \
 
 COPY --from=build /usr/bin/nimbus_validator_client /usr/bin/nimbus_validator_client
 
-RUN usr/bin/nimbus_validator_client --version > /version.txt
-
 # Add the startup script.
 ADD nimbus_vc.sh /nimbus_vc.sh
 RUN chmod +x /nimbus_vc.sh
+
+ADD nimbus_version.sh /nimbus_version.sh
+RUN chmod +x /nimbus_version.sh
+
+RUN /nimbus_version.sh > /version.txt
 
 ENTRYPOINT ["/nimbus_vc.sh"]
