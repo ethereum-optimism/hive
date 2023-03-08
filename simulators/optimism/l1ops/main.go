@@ -18,24 +18,25 @@ var tests = []*optimism.TestSpec{
 }
 
 func main() {
-	suite := hivesim.Suite{
-		Name: "optimism l1ops",
-		Description: `
+	sim := hivesim.New()
+	for _, forkName := range optimism.AllOptimismForkConfigs {
+		forkName := forkName
+		suite := hivesim.Suite{
+			Name: "optimism l1ops - " + forkName,
+			Description: `
 Tests deposits, withdrawals, and other L1-related operations against a running node.
 `[1:],
+		}
+		suite.Add(&hivesim.TestSpec{
+			Name:        "l1ops",
+			Description: "Tests L1 operations.",
+			Run:         runAllTests(tests, forkName),
+		})
+		hivesim.MustRunSuite(sim, suite)
 	}
-
-	suite.Add(&hivesim.TestSpec{
-		Name:        "l1ops",
-		Description: "Tests L1 operations.",
-		Run:         runAllTests(tests),
-	})
-
-	sim := hivesim.New()
-	hivesim.MustRunSuite(sim, suite)
 }
 
-func runAllTests(tests []*optimism.TestSpec) func(t *hivesim.T) {
+func runAllTests(tests []*optimism.TestSpec, fork string) func(t *hivesim.T) {
 	return func(t *hivesim.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 		defer cancel()
@@ -45,6 +46,7 @@ func runAllTests(tests []*optimism.TestSpec) func(t *hivesim.T) {
 			MaxSeqDrift:   120,
 			SeqWindowSize: 120,
 			ChanTimeout:   30,
+			Fork:          fork,
 		}))
 
 		optimism.RunTests(ctx, t, &optimism.RunTestsParams{

@@ -22,35 +22,37 @@ const replicaCount = 2
 const maxReplicaLag = 5
 
 func main() {
-	suite := hivesim.Suite{
-		Name:        "optimism p2p",
-		Description: "This suite runs the P2P tests",
-	}
-
-	// Add tests for full nodes.
-	suite.Add(&hivesim.TestSpec{
-		Name:        "simple p2p testnet",
-		Description: `This suite runs the a testnet with P2P set up`,
-		Run:         func(t *hivesim.T) { runP2PTests(t) },
-	})
-	suite.Add(&hivesim.TestSpec{
-		Name:        "tx forwarding",
-		Description: `This test verifies that tx forwarding works`,
-		Run:         func(t *hivesim.T) { txForwardingTest(t) },
-	})
-
 	sim := hivesim.New()
-	hivesim.MustRunSuite(sim, suite)
+	for _, forkName := range optimism.AllOptimismForkConfigs {
+		forkName := forkName
+		suite := hivesim.Suite{
+			Name:        "optimism p2p - " + forkName,
+			Description: "This suite runs the P2P tests",
+		}
+
+		// Add tests for full nodes.
+		suite.Add(&hivesim.TestSpec{
+			Name:        "simple p2p testnet",
+			Description: `This suite runs the a testnet with P2P set up`,
+			Run:         func(t *hivesim.T) { runP2PTests(t, forkName) },
+		})
+		suite.Add(&hivesim.TestSpec{
+			Name:        "tx forwarding",
+			Description: `This test verifies that tx forwarding works`,
+			Run:         func(t *hivesim.T) { txForwardingTest(t, forkName) },
+		})
+		hivesim.MustRunSuite(sim, suite)
+	}
 }
 
 // txForwardingTest verifies that a transaction submitted to a replica with tx forwarding enabled shows up on the sequencer.
 // TODO: The transaction shows up with `getTransaction`, but it remains pending and is not mined for some reason.
 // This is weird, but fine because it still shows that the transaction is received by the sequencer.
-func txForwardingTest(t *hivesim.T) {
+func txForwardingTest(t *hivesim.T, forkName string) {
 	d := optimism.NewDevnet(t)
 	sender := d.L2Vault.GenerateKey()
 	receiver := d.L2Vault.GenerateKey()
-	d.InitChain(30, 4, 30, core.GenesisAlloc{sender: {Balance: big.NewInt(params.Ether)}})
+	d.InitChain(30, 4, 30, core.GenesisAlloc{sender: {Balance: big.NewInt(params.Ether)}}, forkName)
 	d.AddEth1()
 	d.WaitUpEth1(0, time.Second*10)
 
@@ -116,10 +118,10 @@ func txForwardingTest(t *hivesim.T) {
 }
 
 // runP2PTests runs the P2P tests between the sequencer and verifier.
-func runP2PTests(t *hivesim.T) {
+func runP2PTests(t *hivesim.T, forkName string) {
 	d := optimism.NewDevnet(t)
 
-	d.InitChain(30, 4, 30, nil)
+	d.InitChain(30, 4, 30, nil, forkName)
 	d.AddEth1() // l1 eth1 node is required for l2 config init
 	d.WaitUpEth1(0, time.Second*10)
 

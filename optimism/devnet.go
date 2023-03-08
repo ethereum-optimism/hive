@@ -377,13 +377,21 @@ func (d *Devnet) RunScript(name string, command ...string) *hivesim.ExecInfo {
 	return execInfo
 }
 
-func (d *Devnet) InitChain(maxSeqDrift uint64, seqWindowSize uint64, chanTimeout uint64, additionalAlloc core.GenesisAlloc) {
+func (d *Devnet) InitChain(maxSeqDrift uint64, seqWindowSize uint64, chanTimeout uint64, additionalAlloc core.GenesisAlloc, forkName string) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.T.Log("creating hardhat deploy config")
 
-	regolithTime := uint64(0)
-	regolithOffset := hexutil.Uint64(regolithTime)
+	var regolithTimeOffset *hexutil.Uint64
+	forkConfig, ok := ForkConfigsByName[forkName]
+	if !ok {
+		d.T.Fatalf("Unknown fork name %v", forkName)
+	}
+	d.T.Logf("configuring chain for fork %v", forkName)
+	if forkConfig.EnableRegolith {
+		regolithTime := hexutil.Uint64(0)
+		regolithTimeOffset = &regolithTime
+	}
 	config := &genesis.DeployConfig{
 		L1ChainID:   uint64(L1ChainID),
 		L2ChainID:   uint64(L2ChainID),
@@ -437,7 +445,7 @@ func (d *Devnet) InitChain(maxSeqDrift uint64, seqWindowSize uint64, chanTimeout
 
 		FundDevAccounts: true,
 
-		L2GenesisRegolithTimeOffset: &regolithOffset,
+		L2GenesisRegolithTimeOffset: regolithTimeOffset,
 	}
 
 	err := config.InitDeveloperDeployedAddresses()
@@ -484,7 +492,7 @@ func (d *Devnet) InitChain(maxSeqDrift uint64, seqWindowSize uint64, chanTimeout
 		BatchInboxAddress:      config.BatchInboxAddress,
 		DepositContractAddress: predeploys.DevOptimismPortalAddr,
 		L1SystemConfigAddress:  predeploys.DevSystemConfigAddr,
-		RegolithTime:           &regolithTime,
+		RegolithTime:           config.RegolithTime(uint64(config.L1GenesisBlockTimestamp)),
 	}
 	require.NoError(d.T, d.RollupCfg.Check(), "rollup config needs to be setup correctly")
 
@@ -498,15 +506,28 @@ func (d *Devnet) InitChain(maxSeqDrift uint64, seqWindowSize uint64, chanTimeout
 	d.T.Log("created genesis files")
 }
 
+type ForkConfig struct {
+	Name           string
+	EnableRegolith bool
+}
+
+var ForkConfigsByName = map[string]ForkConfig{
+	"Bedrock":  {EnableRegolith: false},
+	"Regolith": {EnableRegolith: true},
+}
+
+var AllOptimismForkConfigs = []string{"Bedrock", "Regolith"}
+
 type SequencerDevnetParams struct {
 	MaxSeqDrift             uint64
 	SeqWindowSize           uint64
 	ChanTimeout             uint64
 	AdditionalGenesisAllocs core.GenesisAlloc
+	Fork                    string
 }
 
 func StartSequencerDevnet(ctx context.Context, d *Devnet, params *SequencerDevnetParams) error {
-	d.InitChain(params.MaxSeqDrift, params.SeqWindowSize, params.ChanTimeout, params.AdditionalGenesisAllocs)
+	d.InitChain(params.MaxSeqDrift, params.SeqWindowSize, params.ChanTimeout, params.AdditionalGenesisAllocs, params.Fork)
 	d.AddEth1()
 	d.WaitUpEth1(0, time.Second*10)
 	d.AddOpL2()

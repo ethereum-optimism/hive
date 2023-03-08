@@ -74,28 +74,31 @@ var tests = []testSpec{
 }
 
 func main() {
-	suite := hivesim.Suite{
-		Name: "optimism rpc",
-		Description: `
+	sim := hivesim.New()
+	for _, forkName := range optimism.AllOptimismForkConfigs {
+		forkName := forkName
+		suite := hivesim.Suite{
+			Name: "optimism rpc - " + forkName,
+			Description: `
 The RPC test suite runs a set of RPC related tests against a running node. It tests
 several real-world scenarios such as sending value transactions, deploying a contract or
 interacting with one.`[1:],
+		}
+
+		// Add tests for full nodes.
+		suite.Add(&hivesim.TestSpec{
+			Name:        "client launch",
+			Description: `This test launches the client and collects its logs.`,
+			Run:         func(t *hivesim.T) { runAllTests(t, forkName) },
+		})
+
+		hivesim.MustRunSuite(sim, suite)
 	}
-
-	// Add tests for full nodes.
-	suite.Add(&hivesim.TestSpec{
-		Name:        "client launch",
-		Description: `This test launches the client and collects its logs.`,
-		Run:         func(t *hivesim.T) { runAllTests(t) },
-	})
-
-	sim := hivesim.New()
-	hivesim.MustRunSuite(sim, suite)
 }
 
 // runAllTests runs the tests against a client instance.
 // Most tests simply wait for tx inclusion in a block so we can run many tests concurrently.
-func runAllTests(t *hivesim.T) {
+func runAllTests(t *hivesim.T, forkName string) {
 	handleErr := func(err error) {
 		if err != nil {
 			t.Fatal(err)
@@ -121,6 +124,7 @@ func runAllTests(t *hivesim.T) {
 				},
 			},
 		},
+		Fork: forkName,
 	}))
 
 	c := d.GetOpL2Engine(0).Client
@@ -133,7 +137,7 @@ func runAllTests(t *hivesim.T) {
 	for i, test := range tests {
 		test := test
 		adaptedTests[i] = &optimism.TestSpec{
-			Name:        fmt.Sprintf("%s (%s)", test.Name, "ops-l2"),
+			Name:        fmt.Sprintf("%s (%s, %s)", test.Name, "ops-l2", forkName),
 			Description: test.About,
 			Run: func(t *hivesim.T, env *optimism.TestEnv) {
 				switch test.Name[:strings.IndexByte(test.Name, '/')] {
