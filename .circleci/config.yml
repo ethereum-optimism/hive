@@ -15,10 +15,11 @@ jobs:
       - go/mod-download
       - go/save-cache
       - run: {command: "go build ."}
+      - run: {command: "go build junit/junitformatter.go"}
       # Store the executable.
       - persist_to_workspace:
           root: .
-          paths: ["hive"]
+          paths: ["hive", "junitformatter"]
 
   # The below job runs the optimism test simulations. This requires a virtual
   # machine instead of the container-based build environment because hive needs
@@ -41,16 +42,26 @@ jobs:
             -sim=<<parameters.sim>> \
             -sim.loglevel=5 \
             -docker.pull=true \
-            -client=go-ethereum,op-geth_optimism,op-proposer_develop,op-batcher_develop,op-node_develop |& tee /tmp/build/hive.log || echo "failed."
+            -client=go-ethereum,op-geth_optimism,op-proposer_develop,op-batcher_develop,op-node_develop |& tee /tmp/build/hive.log
       - run:
           command: |
             tar -cvf /tmp/workspace.tgz -C /home/circleci/project /home/circleci/project/workspace
           name: "Archive workspace"
+          when: always
       - store_artifacts:
           path: /tmp/workspace.tgz
           destination: hive-workspace.tgz
+          when: always
       - run:
-          command: "! grep 'pass.*=false' /tmp/build/hive.log"
+          command: |
+            /tmp/build/junitformatter /home/circleci/project/workspace/logs/*.json > /home/circleci/project/workspace/logs/junit.xml
+          when: always
+      - store_test_results:
+          path: /home/circleci/project/workspace/logs/junit.xml
+          when: always
+      - store_artifacts:
+          path: /home/circleci/project/workspace/logs/junit.xml
+          when: always
       - slack/notify:
           channel: C03N11M0BBN
           branch_pattern: optimism

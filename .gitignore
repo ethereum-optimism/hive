@@ -3,3 +3,4 @@ workspace
 .idea/
 # build output
 /hive
+/junitformatter
