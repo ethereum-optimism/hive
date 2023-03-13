@@ -46,6 +46,7 @@ jobs:
             -sim=<<parameters.sim>> \
             -sim.loglevel=5 \
             -docker.pull=true \
+            -sim.parallelism=4
             -client=<<parameters.clients>> |& tee /tmp/build/hive.log
       - run:
           command: |
