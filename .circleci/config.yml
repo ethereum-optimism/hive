@@ -53,12 +53,9 @@ jobs:
           command: "! grep 'pass.*=false' /tmp/build/hive.log"
       - slack/notify:
           channel: C03N11M0BBN
+          branch_pattern: optimism
           event: fail
           template: basic_fail_1
-      - slack/notify:
-          channel: C03N11M0BBN
-          event: pass
-          template: basic_success_1
 
   # This job runs the go unit tests.
   go-test:
