@@ -33,6 +33,10 @@ jobs:
         type: string
         default: optimism
         description: Sims to run
+      clients:
+        type: string
+        default: go-ethereum,op-geth,op-proposer_develop,op-batcher_develop,op-node_develop
+        description: Clients to run
     steps:
       - checkout
       - attach_workspace: {at: "/tmp/build"}
@@ -42,7 +46,7 @@ jobs:
             -sim=<<parameters.sim>> \
             -sim.loglevel=5 \
             -docker.pull=true \
-            -client=go-ethereum,op-geth_optimism,op-proposer_develop,op-batcher_develop,op-node_develop |& tee /tmp/build/hive.log
+            -client=<<parameters.clients>> |& tee /tmp/build/hive.log
       - run:
           command: |
             tar -cvf /tmp/workspace.tgz -C /home/circleci/project /home/circleci/project/workspace
@@ -119,21 +123,25 @@ workflows:
           requires: [ "build" ]
           context: slack
           sim: devp2p
+          clients: op-geth-l1
       - run-hive-sim:
           name: hive-test-eth-rpc
           requires: [ "build" ]
           context: slack
           sim: "ethereum/rpc$" # Regex to exclude rpc-compat
+          clients: op-geth-l1
       - run-hive-sim:
           name: hive-test-eth-consensus
           requires: [ "build" ]
           context: slack
           sim: ethereum/consensus
+          clients: op-geth-l1
       - run-hive-sim:
           name: hive-test-eth-graphql
           requires: [ "build" ]
           context: slack
           sim: ethereum/graphql
+          clients: op-geth-l1
   scheduled:
     triggers:
       - schedule:
