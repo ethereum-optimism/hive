@@ -130,12 +130,13 @@ workflows:
           context: slack
           sim: "ethereum/rpc$" # Regex to exclude rpc-compat
           clients: op-geth-l1
-      - run-hive-sim:
-          name: hive-test-eth-consensus
-          requires: [ "build" ]
-          context: slack
-          sim: ethereum/consensus
-          clients: op-geth-l1
+#   Disabled as it currently takes over 5 hours to run and CircleCI times out
+#      - run-hive-sim:
+#          name: hive-test-eth-consensus
+#          requires: [ "build" ]
+#          context: slack
+#          sim: ethereum/consensus
+#          clients: op-geth-l1
       - run-hive-sim:
           name: hive-test-eth-graphql
           requires: [ "build" ]
