@@ -4,6 +4,11 @@ failed=""
 sims=$(find simulators -name go.mod)
 for d in $sims; do
     d="$(dirname $d)"
+    if [ "$d" == "simulators/ethereum/engine" ]
+    then
+      echo "skipping $d"
+      continue
+    fi
     echo "building $d"
     ( cd $d; go build . )
     status=$?

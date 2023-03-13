@@ -103,6 +103,26 @@ workflows:
           requires: [ "build" ]
           context: slack
           sim: optimism/rpc
+      - run-hive-sim:
+          name: hive-test-devp2p
+          requires: [ "build" ]
+          context: slack
+          sim: devp2p
+      - run-hive-sim:
+          name: hive-test-eth-rpc
+          requires: [ "build" ]
+          context: slack
+          sim: "ethereum/rpc$" # Regex to exclude rpc-compat
+      - run-hive-sim:
+          name: hive-test-eth-consensus
+          requires: [ "build" ]
+          context: slack
+          sim: ethereum/consensus
+      - run-hive-sim:
+          name: hive-test-eth-graphql
+          requires: [ "build" ]
+          context: slack
+          sim: ethereum/graphql
   scheduled:
     triggers:
       - schedule:

@@ -2,7 +2,7 @@ module github.com/ethereum/hive/optimism
 
 go 1.18
 
-replace github.com/ethereum/go-ethereum v1.10.26 => github.com/ethereum-optimism/op-geth v0.0.0-20221205191237-0678a130d790
+replace github.com/ethereum/go-ethereum v1.11.2 => github.com/ethereum-optimism/op-geth v0.0.0-20221205191237-0678a130d790
 
 require (
 	github.com/ethereum-optimism/go-ethereum-hdwallet v0.1.3
