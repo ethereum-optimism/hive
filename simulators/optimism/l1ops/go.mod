@@ -2,7 +2,7 @@ module github.com/ethereum/hive/simulators/optimism/l1ops
 
 go 1.18
 
-replace github.com/ethereum/go-ethereum v1.11.2 => github.com/ethereum-optimism/op-geth v1.11.2-de8c5df46
+replace github.com/ethereum/go-ethereum v1.11.2 => github.com/ethereum-optimism/op-geth v1.11.2-de8c5df46.0.20230308025559-13ee9ab9153b
 
 replace github.com/ethereum/hive v0.0.0 => github.com/ethereum-optimism/hive v0.0.0-20220929220349-8cbb5d7fffe7
 
