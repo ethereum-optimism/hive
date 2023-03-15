@@ -9,6 +9,7 @@ MODULES = [
     'simulators/optimism/l1ops',
     'simulators/optimism/p2p',
     'simulators/optimism/rpc',
+    'simulators/optimism/daisy-chain',
 ]
 REPLACER_RE = r'replace github\.com/ethereum/go-ethereum (.*) => github.com/ethereum-optimism/op-geth'
 VERSION_RE = r'github\.com/ethereum-optimism/op-geth@([va-f0-9\d\.\-]+)'

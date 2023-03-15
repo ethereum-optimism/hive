@@ -163,6 +163,33 @@ func (d *Devnet) AddOpL2(opts ...hivesim.StartOption) {
 	d.OpL2Engines = append(d.OpL2Engines, c)
 }
 
+func (d *Devnet) AddOpL2Geth(opts ...hivesim.StartOption) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+
+	if len(d.Clients.OpL2Geth) == 0 {
+		d.T.Fatal("no op-l2 geth client types found")
+		return
+	}
+	if d.L2Cfg == nil {
+		d.T.Fatal("no op-l2 chain configuration found")
+		return
+	}
+	var input []hivesim.StartOption
+
+	l2GenesisCfg, err := json.Marshal(d.L2Cfg)
+	if err != nil {
+		d.T.Fatalf("failed to encode l2 genesis: %v", err)
+		return
+	}
+	input = append(input, BytesFile("/genesis.json", l2GenesisCfg))
+	input = append(input, defaultJWTFile)
+	input = append(input, opts...)
+	c := &OpL2Engine{ELNode{d.T.StartClient(d.Clients.OpL2Geth[0].Name, input...)}}
+	d.T.Logf("added op-l2 geth %d: %s", len(d.OpL2Engines), c.IP)
+	d.OpL2Engines = append(d.OpL2Engines, c)
+}
+
 // AddOpNode creates a new Optimism rollup node. This requires a rollup config to be created previously.
 func (d *Devnet) AddOpNode(eth1Index int, l2EngIndex int, sequencer bool, opts ...hivesim.StartOption) {
 	d.mu.Lock()
@@ -524,6 +551,7 @@ type SequencerDevnetParams struct {
 	ChanTimeout             uint64
 	AdditionalGenesisAllocs core.GenesisAlloc
 	Fork                    string
+	IncludeL2Geth           bool
 }
 
 func StartSequencerDevnet(ctx context.Context, d *Devnet, params *SequencerDevnetParams) error {
@@ -533,12 +561,23 @@ func StartSequencerDevnet(ctx context.Context, d *Devnet, params *SequencerDevne
 	d.AddOpL2()
 	d.WaitUpOpL2Engine(0, time.Second*10)
 
+	// Optionally start a L2Geth node
+	if params.IncludeL2Geth {
+		d.AddOpL2Geth()
+		d.WaitUpOpL2Engine(1, time.Second*10)
+	}
+
 	d.AddOpNode(0, 0, true)
 	d.AddOpBatcher(0, 0, 0)
 	d.AddOpProposer(0, 0, 0)
 
 	d.InitBindingsL1(0)
 	d.InitBindingsL2(0)
+
+	// TODO: Probably shouldn't deploy the Bedrock contracts on l2geth.
+	// if params.IncludeL2Geth {
+	// 	d.InitBindingsL2(1)
+	// }
 
 	if err := WaitBlock(ctx, d.L1Client(0), 2); err != nil {
 		return err
