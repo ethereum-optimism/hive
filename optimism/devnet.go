@@ -163,11 +163,11 @@ func (d *Devnet) AddOpL2(opts ...hivesim.StartOption) {
 	d.OpL2Engines = append(d.OpL2Engines, c)
 }
 
-func (d *Devnet) AddOpL2Geth(opts ...hivesim.StartOption) {
+func (d *Devnet) AddL2Geth(opts ...hivesim.StartOption) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 
-	if len(d.Clients.OpL2Geth) == 0 {
+	if len(d.Clients.L2Geth) == 0 {
 		d.T.Fatal("no op-l2 geth client types found")
 		return
 	}
@@ -185,7 +185,7 @@ func (d *Devnet) AddOpL2Geth(opts ...hivesim.StartOption) {
 	input = append(input, BytesFile("/genesis.json", l2GenesisCfg))
 	input = append(input, defaultJWTFile)
 	input = append(input, opts...)
-	c := &OpL2Engine{ELNode{d.T.StartClient(d.Clients.OpL2Geth[0].Name, input...)}}
+	c := &OpL2Engine{ELNode{d.T.StartClient(d.Clients.L2Geth[0].Name, input...)}}
 	d.T.Logf("added op-l2 geth %d: %s", len(d.OpL2Engines), c.IP)
 	d.OpL2Engines = append(d.OpL2Engines, c)
 }
@@ -563,7 +563,7 @@ func StartSequencerDevnet(ctx context.Context, d *Devnet, params *SequencerDevne
 
 	// Optionally start a L2Geth node
 	if params.IncludeL2Geth {
-		d.AddOpL2Geth()
+		d.AddL2Geth()
 		d.WaitUpOpL2Engine(1, time.Second*10)
 	}
 
@@ -573,11 +573,6 @@ func StartSequencerDevnet(ctx context.Context, d *Devnet, params *SequencerDevne
 
 	d.InitBindingsL1(0)
 	d.InitBindingsL2(0)
-
-	// TODO: Probably shouldn't deploy the Bedrock contracts on l2geth.
-	// if params.IncludeL2Geth {
-	// 	d.InitBindingsL2(1)
-	// }
 
 	if err := WaitBlock(ctx, d.L1Client(0), 2); err != nil {
 		return err

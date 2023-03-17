@@ -8,7 +8,7 @@ import (
 
 type ClientsByRole struct {
 	Eth1        []*hivesim.ClientDefinition
-	OpL2Geth    []*hivesim.ClientDefinition
+	L2Geth      []*hivesim.ClientDefinition
 	OpL2        []*hivesim.ClientDefinition
 	OpNode      []*hivesim.ClientDefinition
 	OpProposer  []*hivesim.ClientDefinition
@@ -27,7 +27,7 @@ func stringifyClientDefs(clientDefs []*hivesim.ClientDefinition) string {
 func (cr *ClientsByRole) String() string {
 	out := "eth1: " + stringifyClientDefs(cr.Eth1)
 	out += ", op-l2: " + stringifyClientDefs(cr.OpL2)
-	out += ", op-l2-geth: " + stringifyClientDefs(cr.OpL2Geth)
+	out += ", op-l2-geth: " + stringifyClientDefs(cr.L2Geth)
 	out += ", op-node: " + stringifyClientDefs(cr.OpNode)
 	out += ", op-proposer: " + stringifyClientDefs(cr.OpProposer)
 	out += ", op-batcher: " + stringifyClientDefs(cr.OpBatcher)
@@ -42,7 +42,7 @@ func Roles(clientDefs []*hivesim.ClientDefinition) *ClientsByRole {
 			out.Eth1 = append(out.Eth1, client)
 		}
 		if client.HasRole("op-l2-geth") {
-			out.OpL2Geth = append(out.OpL2Geth, client)
+			out.L2Geth = append(out.L2Geth, client)
 		}
 		if client.HasRole("op-l2") {
 			out.OpL2 = append(out.OpL2, client)

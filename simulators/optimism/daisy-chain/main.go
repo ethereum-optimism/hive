@@ -55,4 +55,9 @@ func runAllTests(tests []*optimism.TestSpec, fork string) func(t *hivesim.T) {
 // TEMP: This is a placeholder test that does nothing.
 func daisyChainTest(t *hivesim.T, env *optimism.TestEnv) {
 	// TODO
+	l2 := env.Devnet.GetOpL2Engine(1)
+	err := l2.RPC().Call(nil, "miner_stop")
+	if err != nil {
+		t.Log(err)
+	}
 }

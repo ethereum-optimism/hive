@@ -1,68 +1,60 @@
 #!/bin/sh
 set -exu
 
-# TODO: Update entrypoint for l2geth configuration
+RPC_ADDR=0.0.0.0
+RPC_API=eth,rollup,net,web3,debug,miner
 
-# note: geth wants an integer log level (see L1 hive definition)
-VERBOSITY=${HIVE_LOGLEVEL:-3}
+L2GETH_GENESIS_PATH=/genesis_goerli.json
+L2GETH_GENESIS_HASH=0x1067d2037744f17d34e3ceb88b0d654a3798f5d12b79b348085f13f1ec458636
+SYNC_SOURCE=l1
+BLOCK_SIGNER_ADDRESS=0x27770a9694e4B4b1E130Ab91Bc327C36855f612E
+NODE_TYPE=full
 
-GETH_DATA_DIR=/db
-GETH_CHAINDATA_DIR="$GETH_DATA_DIR/geth/chaindata"
+GETH_DATA_DIR=/geth
+GETH_CHAINDATA_DIR=$GETH_DATA_DIR/geth/chaindata
+GETH_KEYSTORE_DIR=$GETH_DATA_DIR/keystore
+BLOCK_SIGNER_PRIVATE_KEY=da5deb73dbc9dea2e3916929daaf079f75232d32a2cf37ff8b1f7140ef3fd9db
+BLOCK_SIGNER_PRIVATE_KEY_PASSWORD="pwd"
 
-CHAIN_ID=$(cat /genesis.json | jq -r .config.chainId)
+mkdir $GETH_DATA_DIR
+
+if [ ! -d "$GETH_KEYSTORE_DIR" ]; then
+    echo "$GETH_KEYSTORE_DIR missing, running account import"
+    echo -n "$BLOCK_SIGNER_PRIVATE_KEY_PASSWORD" > "$GETH_DATA_DIR"/password
+    echo -n "$BLOCK_SIGNER_PRIVATE_KEY" > "$GETH_DATA_DIR"/block-signer-key
+    geth account import \
+        --datadir="$GETH_DATA_DIR" \
+        --password="$GETH_DATA_DIR"/password \
+        "$GETH_DATA_DIR"/block-signer-key
+    echo "get account import complete"
+fi
 
 if [ ! -d "$GETH_CHAINDATA_DIR" ]; then
-	echo "$GETH_CHAINDATA_DIR missing, running init"
-	echo "Initializing genesis."
-	geth --verbosity="$VERBOSITY" init \
-		--datadir="$GETH_DATA_DIR" \
-		"/genesis.json"
+    echo "$GETH_CHAINDATA_DIR missing, running init"
+    geth init --datadir="$GETH_DATA_DIR" "$L2GETH_GENESIS_PATH" "$L2GETH_GENESIS_HASH"
+    echo "geth init complete"
 else
-	echo "$GETH_CHAINDATA_DIR exists."
+    echo "$GETH_CHAINDATA_DIR exists, checking for hardfork."
+    echo "Chain config:"
+    geth dump-chain-cfg --datadir="$GETH_DATA_DIR"
 fi
 
-# We must set miner.gaslimit to the gas limit in genesis
-# in the command below!
-GAS_LIMIT_HEX=$(jq -r .gasLimit < /genesis.json | sed s/0x//i | tr '[:lower:]' '[:upper:]')
-GAS_LIMIT=$(echo "obase=10; ibase=16; $GAS_LIMIT_HEX" | bc)
+# Set rollup backend to match sync source
+export ROLLUP_BACKEND=$SYNC_SOURCE
 
-
-EXTRA_FLAGS="--rollup.disabletxpoolgossip=true"
-
-# We check for env variables that may not be bound so we need to disable `set -u` for this section.
-set +u
-if [ "$HIVE_OP_GETH_SEQUENCER_HTTP" != "" ]; then
-    EXTRA_FLAGS="$EXTRA_FLAGS --rollup.sequencerhttp $HIVE_OP_GETH_SEQUENCER_HTTP"
-fi
-set -u
-
-# Warning: Archive mode is required, otherwise old trie nodes will be
-# pruned within minutes of starting the devnet.
-
-geth \
-	--datadir="$GETH_DATA_DIR" \
-	--verbosity="$VERBOSITY" \
-	--http \
-	--http.corsdomain="*" \
-	--http.vhosts="*" \
-	--http.addr=0.0.0.0 \
-	--http.port=8545 \
-	--http.api=web3,debug,eth,txpool,net,engine \
-	--ws \
-	--ws.addr=0.0.0.0 \
-	--ws.port=8546 \
-	--ws.origins="*" \
-	--ws.api=debug,eth,txpool,net,engine \
-	--authrpc.jwtsecret="/hive/input/jwt-secret.txt" \
-	--authrpc.port=8551 \
-	--authrpc.addr=0.0.0.0 \
-	--syncmode=full \
-	--nodiscover \
-	--maxpeers=0 \
-	--miner.gaslimit=$GAS_LIMIT \
-	--networkid="$CHAIN_ID" \
-	--password="$GETH_DATA_DIR"/password \
-	--allow-insecure-unlock \
-	--gcmode=archive \
-	$EXTRA_FLAGS \
-	"$@"
+# Run geth
+exec geth \
+  --vmodule=eth/*=5,miner=4,rpc=5,rollup=4,consensus/clique=1 \
+  --datadir=$GETH_DATA_DIR \
+  --password=$GETH_DATA_DIR/password \
+  --allow-insecure-unlock \
+  --unlock=$BLOCK_SIGNER_ADDRESS \
+  --mine \
+  --miner.etherbase=$BLOCK_SIGNER_ADDRESS \
+  --gcmode=$NODE_TYPE \
+  --rpc \
+	--rpcaddr $RPC_ADDR \
+	--mine \
+	--miner.etherbase $BLOCK_SIGNER_ADDRESS \
+	--rpcapi $RPC_API \
+  $@
