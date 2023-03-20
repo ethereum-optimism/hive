@@ -30,7 +30,13 @@ EXTRA_FLAGS="--rollup.disabletxpoolgossip=true"
 # We check for env variables that may not be bound so we need to disable `set -u` for this section.
 set +u
 if [ "$HIVE_OP_GETH_SEQUENCER_HTTP" != "" ]; then
-    EXTRA_FLAGS="$EXTRA_FLAGS --rollup.sequencerhttp $HIVE_OP_GETH_SEQUENCER_HTTP"
+  EXTRA_FLAGS="$EXTRA_FLAGS --rollup.sequencerhttp=$HIVE_OP_GETH_SEQUENCER_HTTP"
+fi
+if [ "$HIVE_OP_GETH_HISTORICAL_RPC" != "" ]; then
+	EXTRA_FLAGS="$EXTRA_FLAGS --rollup.historicalrpc=$HIVE_OP_GETH_HISTORICAL_RPC"
+fi
+if [ "$HIVE_OP_GETH_USE_GOERLI_DATADIR" != "" ]; then
+	GETH_DATA_DIR="/goerli-bedrock"
 fi
 set -u
 

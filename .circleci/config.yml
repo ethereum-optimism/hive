@@ -33,34 +33,16 @@ jobs:
         type: string
         default: optimism
         description: Sims to run
-      include-l2-geth:
-        type: boolean
-        default: false
-        description: Whether or not to include op-geth
     steps:
       - checkout
       - attach_workspace: {at: "/tmp/build"}
-      - when:
-          condition: << parameters.include-l2-geth >>
-          steps:
-            - run: 
-                command: |
-                  /tmp/build/hive \
-                  -sim=<<parameters.sim>> \
-                  -sim.loglevel=5 \
-                  -docker.pull=true \
-                  -client=go-ethereum,op-geth_optimism,l2geth,op-proposer_develop,op-batcher_develop,op-node_develop |& tee /tmp/build/hive.log
-      - when:
-          condition:
-            not: << parameters.include-l2-geth >>
-          steps:
-            - run:
-                command: |
-                  /tmp/build/hive \
-                  -sim=<<parameters.sim>> \
-                  -sim.loglevel=5 \
-                  -docker.pull=true \
-                  -client=go-ethereum,op-geth_optimism,op-proposer_develop,op-batcher_develop,op-node_develop |& tee /tmp/build/hive.log
+      - run:
+          command: |
+            /tmp/build/hive \
+            -sim=<<parameters.sim>> \
+            -sim.loglevel=5 \
+            -docker.pull=true \
+            -client=go-ethereum,op-geth_optimism,op-proposer_develop,op-batcher_develop,op-node_develop |& tee /tmp/build/hive.log
       - run:
           command: |
             tar -cvf /tmp/workspace.tgz -C /home/circleci/project /home/circleci/project/workspace
@@ -134,7 +116,6 @@ workflows:
           requires: [ "build" ]
           context: slack
           sim: optimism/daisy-chain
-          include-l2-geth: true
   scheduled:
     triggers:
       - schedule:
