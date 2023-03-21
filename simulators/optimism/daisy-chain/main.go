@@ -93,7 +93,7 @@ func checkCallEquivalence[K any](
 	// Grab the result of the trace call from op-geth. This request should be daisy-chained.
 	opGeth := env.Devnet.GetOpL2Engine(0).RPC()
 	var opGethRes K
-	err := opGeth.CallContext(env.Ctx(), &opGethRes, method, args)
+	err := opGeth.CallContext(env.Ctx(), &opGethRes, method, args...)
 	require.NoError(t, err, fmt.Sprintf("failed to call %s on op-geth", method))
 
 	// Grab the result of the trace call from the historical sequencer endpoint. The result
@@ -101,7 +101,7 @@ func checkCallEquivalence[K any](
 	histSeq, err := rpc.DialHTTP(HistoricalSequencerRPC)
 	require.NoError(t, err, "failed to dial historical sequencer RPC")
 	var histSeqRes K
-	err = histSeq.CallContext(env.Ctx(), &histSeqRes, method, args)
+	err = histSeq.CallContext(env.Ctx(), &histSeqRes, method, args...)
 	require.NoError(t, err, fmt.Sprintf("failed to call %s on historical sequencer", method))
 
 	// Perform the callback, which makes assertions about the equivalence of the two results.
@@ -233,7 +233,7 @@ func ethEstimateGasTest(t *hivesim.T, env *optimism.TestEnv) {
 		t,
 		env,
 		"eth_estimateGas",
-		func(opGethRes hexutil.Bytes, histSeqRes hexutil.Bytes) {
+		func(opGethRes hexutil.Uint64, histSeqRes hexutil.Uint64) {
 			// Compare the results.
 			require.Greater(t, opGethRes, hexutil.Uint64(0), "gas estimate from op-geth should be greater than 0")
 			require.Equal(t, histSeqRes, opGethRes, "results from historical sequencer and op-geth do not match")

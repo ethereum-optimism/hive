@@ -8,9 +8,4 @@ RUN geth console --exec 'console.log(admin.nodeInfo.name)' --maxpeers=0 --nodisc
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Docker automatically extracts archives when adding them to the image.
-ADD https://storage.googleapis.com/oplabs-goerli-data/goerli-bedrock.tar /goerli-bedrock.tar
-RUN mkdir /goerli-bedrock
-RUN tar -xvf /goerli-bedrock.tar -C /goerli-bedrock
-
 ENTRYPOINT ["/bin/bash", "/entrypoint.sh"]

@@ -36,6 +36,9 @@ if [ "$HIVE_OP_GETH_HISTORICAL_RPC" != "" ]; then
 	EXTRA_FLAGS="$EXTRA_FLAGS --rollup.historicalrpc=$HIVE_OP_GETH_HISTORICAL_RPC"
 fi
 if [ "$HIVE_OP_GETH_USE_GOERLI_DATADIR" != "" ]; then
+	curl -L -o /goerli-bedrock.tar https://storage.googleapis.com/oplabs-goerli-data/goerli-bedrock.tar
+	mkdir /goerli-bedrock
+	tar -xvf /goerli-bedrock.tar -C /goerli-bedrock
 	GETH_DATA_DIR="/goerli-bedrock"
 fi
 set -u
