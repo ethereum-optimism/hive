@@ -82,20 +82,6 @@ func runAllTests(tests []*optimism.TestSpec, fork string) func(t *hivesim.T) {
 	}
 }
 
-// txTraceResult is the result of a single transaction trace.
-type txTraceResult struct {
-	Result interface{} `json:"result,omitempty"` // Trace results produced by the tracer
-	Error  string      `json:"error,omitempty"`  // Trace failure produced by the tracer
-}
-
-// blockTraceResult represents the results of tracing a single block when an entire
-// chain is being traced.
-type blockTraceResult struct {
-	Block  hexutil.Uint64   `json:"block"`  // Block number corresponding to this trace
-	Hash   common.Hash      `json:"hash"`   // Block hash corresponding to this trace
-	Traces []*txTraceResult `json:"traces"` // Trace results produced by the task
-}
-
 // Tests that a daisy-chained debug_traceBlockByNumber call to `op-geth` works as expected.
 func debugTraceBlockByNumberTest(t *hivesim.T, env *optimism.TestEnv) {
 	// Grab a random historical block
@@ -178,6 +164,14 @@ func debugTraceCallTest(t *hivesim.T, env *optimism.TestEnv) {
 	// The debug_traceCall method should not be implemented in op-geth's RPC.
 	require.Error(t, err, "debug_traceCall should not be implemented in op-geth")
 	require.Equal(t, err.Error(), "l2geth does not have a debug_traceCall method", "debug_traceCall should not be implemented in op-geth")
+
+	// Grab the result of the trace call from the historical sequencer endpoint. The result
+	// should also be an error, but a different one.
+	histSeq, err := rpc.DialHTTP(HistoricalSequencerRPC)
+	require.NoError(t, err, "failed to dial historical sequencer RPC")
+	err = histSeq.CallContext(env.Ctx(), nil, "debug_traceCall", make(map[string]interface{}), getRandomHistoricalBlockHex())
+	require.Error(t, err, "debug_traceCall should not be implemented in op-geth")
+	require.Equal(t, err.Error(), "the method debug_traceCall does not exist/is not available", "debug_traceCall should not be implemented in op-geth")
 }
 
 // Tests that a daisy-chaned eth_call to `op-geth` works as expected.
@@ -251,6 +245,12 @@ func ethEstimateGasTest(t *hivesim.T, env *optimism.TestEnv) {
 	// Compare the results.
 	require.Greater(t, opGethRes, hexutil.Uint64(0), "gas estimate from op-geth should be greater than 0")
 	require.Equal(t, histSeqRes, opGethRes, "results from historical sequencer and op-geth do not match")
+}
+
+// txTraceResult is the result of a single transaction trace.
+type txTraceResult struct {
+	Result interface{} `json:"result,omitempty"` // Trace results produced by the tracer
+	Error  string      `json:"error,omitempty"`  // Trace failure produced by the tracer
 }
 
 // getRandomHistoricalBlockHex returns a random historical block number.

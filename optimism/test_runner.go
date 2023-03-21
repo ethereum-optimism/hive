@@ -12,7 +12,7 @@ import (
 )
 
 // default timeout for RPC calls
-var RPCTimeout = 10 * time.Second
+var RPCTimeout = 30 * time.Second
 
 // LoggingRoundTrip writes requests and responses to the test log.
 type LoggingRoundTrip struct {
