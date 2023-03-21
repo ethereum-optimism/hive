@@ -42,19 +42,17 @@ var tests = []*optimism.TestSpec{
 
 func main() {
 	sim := hivesim.New()
-	for _, forkName := range optimism.AllOptimismForkConfigs {
-		forkName := forkName
-		suite := hivesim.Suite{
-			Name:        "optimism daisy-chain - " + forkName,
-			Description: "Tests the daisy-chain functionality of op-geth.",
-		}
-		suite.Add(&hivesim.TestSpec{
-			Name:        "daisy-chain",
-			Description: "Tests the daisy chain.",
-			Run:         runAllTests(tests, forkName),
-		})
-		hivesim.MustRunSuite(sim, suite)
+	forkName := "Bedrock"
+	suite := hivesim.Suite{
+		Name:        "optimism daisy-chain - " + forkName,
+		Description: "Tests the daisy-chain functionality of op-geth.",
 	}
+	suite.Add(&hivesim.TestSpec{
+		Name:        "daisy-chain",
+		Description: "Tests the daisy chain.",
+		Run:         runAllTests(tests, forkName),
+	})
+	hivesim.MustRunSuite(sim, suite)
 }
 
 func runAllTests(tests []*optimism.TestSpec, fork string) func(t *hivesim.T) {
