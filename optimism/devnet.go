@@ -163,6 +163,33 @@ func (d *Devnet) AddOpL2(opts ...hivesim.StartOption) {
 	d.OpL2Engines = append(d.OpL2Engines, c)
 }
 
+func (d *Devnet) AddL2Geth(opts ...hivesim.StartOption) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+
+	if len(d.Clients.L2Geth) == 0 {
+		d.T.Fatal("no op-l2 geth client types found")
+		return
+	}
+	if d.L2Cfg == nil {
+		d.T.Fatal("no op-l2 chain configuration found")
+		return
+	}
+	var input []hivesim.StartOption
+
+	l2GenesisCfg, err := json.Marshal(d.L2Cfg)
+	if err != nil {
+		d.T.Fatalf("failed to encode l2 genesis: %v", err)
+		return
+	}
+	input = append(input, BytesFile("/genesis.json", l2GenesisCfg))
+	input = append(input, defaultJWTFile)
+	input = append(input, opts...)
+	c := &OpL2Engine{ELNode{d.T.StartClient(d.Clients.L2Geth[0].Name, input...)}}
+	d.T.Logf("added op-l2 geth %d: %s", len(d.OpL2Engines), c.IP)
+	d.OpL2Engines = append(d.OpL2Engines, c)
+}
+
 // AddOpNode creates a new Optimism rollup node. This requires a rollup config to be created previously.
 func (d *Devnet) AddOpNode(eth1Index int, l2EngIndex int, sequencer bool, opts ...hivesim.StartOption) {
 	d.mu.Lock()
