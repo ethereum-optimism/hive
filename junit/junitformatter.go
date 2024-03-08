@@ -7,37 +7,83 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/ethereum/hive/internal/libhive"
 )
 
+// TestSuites represents the aggregated test results.
+type TestSuites struct {
+	XMLName    xml.Name `xml:"testsuites"`
+	Failures   int      `xml:"failures,attr"`
+	Name       string   `xml:"name,attr"`
+	Tests      int      `xml:"tests,attr"`
+	Suites     []TestSuite
+}
+
+// TestSuite represents a single test suite.
+type TestSuite struct {
+	XMLName       xml.Name `xml:"testsuite"`
+	Name          string   `xml:"name,attr"`
+	Failures      int      `xml:"failures,attr"`
+	Tests         int      `xml:"tests,attr"`
+	Properties    Properties
+	TestCases     []TestCase
+}
+
+// Properties holds various properties of a test suite.
+type Properties struct {
+	Properties []Property
+}
+
+// Property represents a single property.
+type Property struct {
+	Name string `xml:"name,attr"`
+	Value string `xml:"value,attr"`
+}
+
+// TestCase represents a single test case.
+type TestCase struct {
+	XMLName xml.Name `xml:"testcase"`
+	Name     string   `xml:"name,attr"`
+	Time     string   `xml:"time,attr"`
+	Failure *Failure
+	SystemOut string `xml:"system-out"`
+}
+
+// Failure represents a test failure.
+type Failure struct {
+	Message string `xml:"message,attr"`
+}
+
 func main() {
 	if len(os.Args) <= 1 {
-		fail(errors.New("no input files specified"))
+		fmt.Println("Error: no input files specified")
+		os.Exit(1)
 	}
 
 	result := TestSuites{
-		Failures: 0,
-		Name:     "Hive Results",
-		Tests:    0,
+		Name: "Hive Results",
 	}
 	var suites []TestSuite
 
-	for i := 1; i < len(os.Args); i++ {
-		suite, err := readInput(os.Args[i])
+	for _, file := range os.Args[1:] {
+		suite, err := readInput(file)
 		if err != nil {
-			fail(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 		junitSuite := mapTestSuite(suite)
-		result.Failures = result.Failures + junitSuite.Failures
-		result.Tests = result.Tests + junitSuite.Tests
+		result.Failures += junitSuite.Failures
+		result.Tests += junitSuite.Tests
 		suites = append(suites, junitSuite)
 	}
 	result.Suites = suites
 
-	junit, err := xml.MarshalIndent(result, "", "  ")
+	junit, err := xml.MarshalIndent(result, "", " ")
 	if err != nil {
-		fail(err)
+		fmt.Println("Error marshalling XML:", err)
+		os.Exit(1)
 	}
 	fmt.Println(string(junit))
 }
@@ -59,19 +105,18 @@ func readInput(file string) (libhive.TestSuite, error) {
 func mapTestSuite(suite libhive.TestSuite) TestSuite {
 	junitSuite := TestSuite{
 		Name:       suite.Name,
-		Failures:   0,
 		Tests:      len(suite.TestCases),
 		Properties: Properties{},
 	}
 	for clientName, clientVersion := range suite.ClientVersions {
 		junitSuite.Properties.Properties = append(junitSuite.Properties.Properties, Property{
-			Name:  clientName,
+			Name: clientName,
 			Value: clientVersion,
 		})
 	}
 	for _, testCase := range suite.TestCases {
 		if !testCase.SummaryResult.Pass {
-			junitSuite.Failures = junitSuite.Failures + 1
+			junitSuite.Failures++
 		}
 		junitSuite.TestCases = append(junitSuite.TestCases, mapTestCase(testCase))
 	}
@@ -92,10 +137,6 @@ func mapTestCase(source *libhive.TestCase) TestCase {
 	return result
 }
 
-func fail(reason error) {
-	fmt.Println(reason)
-	os.Exit(1)
-}
 
 /*
 Target XML format (lots of it being optional):
